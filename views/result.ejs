@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Result</title>
+
+    <style>
+            svg rect {
+               fill: rgb(143, 69, 69);
+            }
+            
+            svg text {
+               fill: rgb(40, 70, 116);
+               font: 12px sans-serif;
+               text-anchor: end;
+            }
+         </style>
+</head>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+<body>
+        <script>
+               // var news = text.map(a => a.newsportal);
+               // var count = text.map(a => a.count);
+               var news = ['Bild','Focus','Die Tageszeitung','Welt'];
+               var count = [4,4,7,11];
+                //var data = [10, 5, 12, 15];
+         
+                var width = 300 
+                    scaleFactor = 20, 
+                    barHeight = 30;
+                
+                var graph = d3.select("body")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", barHeight * count.length);
+                
+                var bar = graph.selectAll("g")
+                    .data(count)
+                    .enter()
+                    .append("g")
+                    .attr("transform", function(d, i) {
+                    return "translate(0," + i * barHeight + ")";
+                    });
+                bar.append("rect").attr("width", function(d) {
+                    return d * scaleFactor;
+                })
+                
+                .attr("height", barHeight - 1);
+                
+                bar.append("text")
+                    .attr("x", function(d) { return (d*scaleFactor); })
+                    .attr("y", barHeight / 2)
+                    .attr("dy", ".35em")
+                    .text(function(d, index) { return d + " " + news[index]; });
+             </script>
+
+        <p><% date.forEach(function(input) { %>
+            <li><%= input.newsportal %> - <%= input.count %></li>
+        <% }); %></p>
+</body>
+</html>
