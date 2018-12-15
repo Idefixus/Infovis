@@ -1,85 +1,56 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Infovis Project</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
-    <style type="text/css">
-        body {
-            background-color: #cccccc;
-        }
-        .land {
-            background-image: url("map.gif");
-            
-            background-repeat: no-repeat;
-            width: 100%;
-            height: 1013px;
-            background-position: center top;
-    }
-        .sued {
-            position: relative;
-            left: 50%;
-            top: 80%
-            /*background-color: #cccccc;*/
-        }
-        .bild {
-            position: relative;
-            left: 40%;
-            top: 40%
-            /*background-color: #cccccc;*/
-        }
-        .dot {
-            height: 50px;
-            width: 50px;
-            background-color: rgb(61, 71, 143);
-            border-radius: 50%;
-            display: inline-block;
-            position: relative;
-            left: 45%;
-            top: 20%
-        }
-        .dot2 {
-            height: 50px;
-            width: 50px;
-            background-color: rgb(37, 128, 49);
-            border-radius: 50%;
-            display: inline-block;
-            position: relative;
-            left: 30%;
-            top: 50%
-        }
-    </style>
-<script>
-        $(document).ready(function(){
-            $( ".sued" ).click(function() {
-                alert( "Süddeutsche Clicked" );
-            });
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <!--<script>
+        $(document).ready(function () {
+            //$(".sued").click(function () {
+            //    alert("Süddeutsche Clicked");
+            //});
 
-            $( ".bild" ).click(function() {
+            $(".bild").click(function () {
+                console.log("Bild clicked");
                 location.href = "/home";
-                
             });
-            $( ".dot").text("Event");
-            
-            $( ".dot").text("WOW");
-            
         });
 
-        </script>
+    </script>-->
 </head>
 <body>
     <h1>Overview of Germany</h1>
 
     <div>Landkarte der Zeitungen</div>
     <div class='land'>
-        <button class='sued' type="button">Süddeutsche Zeitung</button> 
-        <button class='bild' type="button">Bild</button> 
-        <span class="dot"></span>
-        <span class="dot2"></span>
-        
+        <!-- <button class='sued' type="button">Süddeutsche Zeitung</button>-->
+     <!--<button class='bild' type="button">Bild</button>-->
+        <!--<span class="berlin">
+        <span class="tooltiptext">Berlin</span>
+    </span>-->
+        <form name="hamburgform" method="post" action="/summary?event=Hamburg">
+            <span class="hamburg" onclick="hamburgform.submit()">
+                <span class="tooltiptext">Hamburg</span>
+            </span>
+        </form>
+        <form name="berlinform" method="post" action="/summary?event=Berlin">
+            <span class="berlin" onclick="berlinform.submit()">
+                <span class="tooltiptext">Berlin</span>
+            </span>
+        </form>
+        <form name="munichform" method="post" action="/summary?event=Munchen">
+            <span class="munich" onclick="munichform.submit()">
+                <span class="tooltiptext">Munich</span>
+            </span>
+        </form>
+        <form name="cologneform" method="post" action="/summary?event=Koln">
+            <span class="cologne" onclick="cologneform.submit()">
+                <span class="tooltiptext">Cologne</span>
+            </span>
+        </form>
     </div>
-    
 </body>
 </html>
