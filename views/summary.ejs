@@ -5,10 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Result</title>
-
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <style>
+		body {
+			background-image: linear-gradient(to bottom right, #fdfbfb, #ebedee);
+		}
+		.graph {
+			padding-top: 30px;
+			padding-bottom: 30px;
+		}
+		
+		.line {
+			fill: none;
+			stroke: #547980;
+			stroke-width: 2px;
+		}
+		.dot {
+			fill: #547980;
+		}
+
 		svg rect {
-			fill: cadetblue;
+			fill: #547980;
 		}
             
 		svg text {
@@ -16,12 +33,31 @@
 			font: 12px sans-serif;
 			text-anchor: end;
 		}
+		
+		div.tooltip {   
+			position: absolute;           
+			text-align: center;           
+			width: 70px;                  
+			height: 35px;                 
+			padding: 3px;             
+			font: 12px sans-serif;        
+			background: Cadetblue;   
+			border: 0px;      
+			border-radius: 8px;           
+			pointer-events: none;         
+		}
+		
+		
+		
 	</style>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
 	<script>
 		function test(d) {
-			alert("Clicked: " + d.newsportal);
+			//alert("Clicked: " + d.newsportal);
+			$('#myModal').modal('show'); 
 		}
 
 	</script>
@@ -30,18 +66,20 @@
 <body>
 	
 	<h2><%= event %></h2>
-	<p>&#9654; wurde insgesamt <%= sum %> Mal im Titel eines Artikels der nachfolgend aufgelisteten Zeitungen erw&auml;hnt.</p>
+	<p>... wurde insgesamt <%= sum %> Mal im Titel eines Artikels der nachfolgend aufgelisteten Zeitungen erw&auml;hnt.</p>
 	
      
 	<script>
 		var data2 = <%- JSON.stringify(results) %>;
          
-        var width = 3000 
+        var width = 3000,
+			height = 500,
 			scaleFactor = 2, 
 			barHeight = 30;
                 
         var graph = d3.select("body")
             .append("svg")
+			.attr("class", "graph")
             .attr("width", width)
             .attr("height", barHeight * data2.length);       
                 
@@ -57,7 +95,11 @@
 				return d.count * scaleFactor;
 			})
 			.attr("height", barHeight - 1)
-			.on("click", test);
+			.on("click", test)
+			.on("mouseover", function (d) { 
+				d3.select(this).style("fill", "Cadetblue"); })
+			.on("mouseout", function(d) {
+				d3.select(this).style("fill", "#547980"); });
                 
 		bar.append("text")
 			.attr("x", function(d) {return -5;}) 
@@ -75,11 +117,187 @@
 			.attr("y", barHeight / 2)
 			.attr("dy", ".35em")
 			.text(function(d) { return d.count; });	
+			
+//----------------------------------------------------------------------	
+	</script>
+	
+	<h3>Bierkonsum auf dem Oktoberfest:</h3>
+	
+	<script>
+
+
+var dataAsCsv = `Year,Amount
+1980,38438
+1981,42434
+1982,43323
+1983,45760
+1984,49713
+1985,54541
+1986,53807
+1987,52817
+1988,50951
+1989,51241
+1990,54300
+1991,54686
+1992,48888
+1993,51933
+1994,52108
+1995,50162
+1996,52622
+1997,55891
+1998,54782
+1999,60054
+2000,64591
+2001,48698
+2002,57614
+2003,62294
+2004,61163
+2005,61012
+2006,68617
+2007,69406
+2008,64922
+2009,66436
+2010,71000
+2011,79225
+2012,74025
+2013,77031
+2014,76808
+2015,75134
+2016,66231
+2017,77836`;
+
+
+		// set the dimensions and margins of the graph
+		var margin = {top: 50, right: 50, bottom: 100, left: 80},
+			width = 1000 - margin.left - margin.right,
+			height = 500 - margin.top - margin.bottom;
+    
+		// set the ranges
+		var x = d3.scaleTime().range([0, width]);
+		var y = d3.scaleLinear().range([height, 0]);
+
+		// define the line
+		var valueline = d3.line()
+			.x(function(d) { return x(d.Year); })
+			.y(function(d) { return y(d.Amount); });
+			
+		// define the div for the tooltip
+		var div = d3.select("body").append("div")	
+			.attr("class", "tooltip")				
+			.style("opacity", 0);
+
+
+		// appends the svg obgect to the body of the page
+		// appends a 'group' element to 'svg'
+		// moves the 'group' element to the top left margin
+		var svg = d3.select("body").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform",
+				"translate(" + margin.left + "," + margin.top + ")");
+
+		var data = d3.csvParse(dataAsCsv);
+
+		var parseTime = d3.timeParse("%Y");
+		var formatTime = d3.timeFormat("%Y");
+
+		// formats the data
+		data.forEach(function(d) {
+			d.Year = parseTime(d.Year);
+			d.Amount = +d.Amount;
+		});
+
+		// scales the range of the data
+		x.domain(d3.extent(data, function(d) { return d.Year}));
+		y.domain([0, d3.max(data, function(d) { return d.Amount; })]);
+
+
+		// adds the valueline path
+		svg.append("path")
+			.data([data])
+			.attr("class", "line")
+			.attr("d", valueline);
+
+		// adds the X Axis
+		svg.append("g")
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(x));
+
+		// text label for the x axis
+		svg.append("text")             
+			.attr("transform",
+				"translate(" + (width/2) + " ," + (height + margin.top) + ")")
+			.style("text-anchor", "middle")
+			.text("Year");
+
+		// adds the Y Axis
+		svg.append("g")
+			.call(d3.axisLeft(y));
+
+		// text label for the y axis
+		svg.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 0 - margin.left)
+			.attr("x",0 - (height / 2))
+			.attr("dy", "1em")
+			.style("text-anchor", "middle")
+			.text("Amount (in hl)");  
+ 
+		// appends a circle for each datapoint 
+		svg.selectAll(".dot")
+			.data(data)
+			.enter()
+			.append("circle") 
+			.attr("class", "dot") 
+			.attr("cx", function(d) { return x(d.Year) })
+			.attr("cy", function(d) { return y(d.Amount) })
+			.attr("r", 5)
+			.on("mouseover", function (d) { 
+				d3.select(this).style("fill", "#45ADA8"); 
+				div.transition()		
+					.duration(200)		
+					.style("opacity", .9);		
+				div.html("Year: " + formatTime(d.Year) + "<br/>"  + d.Amount + " hl")	
+					.style("left", (d3.event.pageX) + "px")		
+					.style("top", (d3.event.pageY - 28) + "px");	
+            })
+			.on("mouseout", function(d) {
+				d3.select(this).style("fill", "#547980");
+				div.transition()		
+					.duration(500)		
+					.style("opacity", 0);	
+			});
+	
     </script>
 
-	<p><% results.forEach(function(input) { %>
+
+	<!-- <p><% results.forEach(function(input) { %>
 		<li><%= input.newsportal %> - <%= input.count %></li>
-		<% }); %></p>
+		<% }); %></p> -->
+
+		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 		
 </body>
 </html>
