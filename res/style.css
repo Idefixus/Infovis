@@ -1,0 +1,187 @@
+body {
+    background-color: #cccccc;
+}
+
+.land {
+    background-image: url("map.gif");
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 1013px;
+    background-position: center top;
+}
+
+.sued {
+    position: relative;
+    left: 50%;
+    top: 60%
+    /*background-color: #cccccc;*/
+}
+
+.bild {
+    position: relative;
+    left: 40%;
+    top: 40%
+    /*background-color: #cccccc;*/
+}
+.maassen {
+    background-image: url(Maaßen.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+    position: relative;
+    left: 60%;
+    top: 330px;
+}
+.maassen .tooltiptext {
+    visibility: hidden;
+    background-color: dimgray;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    width: 100px;
+    top: 100%;
+    left: 50%;
+    margin-left: -50px; /* half of the width to center the tooltip */
+}
+.maassen:hover .tooltiptext {
+    visibility: visible;
+}
+.maassen:hover {
+    background-image: url(Maaßen.jpg);
+}
+.berlin {
+    background-image: url(icon_berlin.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    height: 38px;
+    width: 38px;
+    display: inline-block;
+    position: relative;
+    left: 65%;
+    top: 265px;
+}
+    .berlin .tooltiptext {
+        visibility: hidden;
+        background-color: dimgray;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        width: 100px;
+        top: 100%;
+        left: 50%;
+        margin-left: -50px; /* half of the width to center the tooltip */
+    }
+    .berlin:hover .tooltiptext {
+        visibility: visible;
+    }
+    .berlin:hover {
+        background-image: url(icon_berlin_filled.png);
+    }
+
+.hamburg {
+    background-image: url(icon_hamburg.png);
+    background-size: contain;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+    position: relative;
+    left: 47%;
+    top: 200px;
+}
+    .hamburg .tooltiptext {
+        visibility: hidden;
+        background-color: dimgray;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        width: 100px;
+        top: 100%;
+        left: 50%;
+        margin-left: -50px; /* half of the width to center the tooltip */
+    }
+    .hamburg:hover .tooltiptext {
+         visibility: visible;
+    }
+    .hamburg:hover {
+        background-image: url(icon_hamburg_filled.png);
+    }
+
+.munich {
+    background-image: url(icon_munich.png);
+    background-size: contain;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+    position: relative;
+    left: 56%;
+    top: 775px;
+}
+    .munich .tooltiptext {
+        visibility: hidden;
+        background-color: dimgray;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        width: 100px;
+        top: 100%;
+        left: 50%;
+        margin-left: -50px; /* half of the width to center the tooltip */
+    }
+    .munich:hover .tooltiptext {
+        visibility: visible;
+    }
+    .munich:hover {
+        background-image: url(icon_munich_filled.png);
+    }
+
+
+.cologne {
+    background-image: url(icon_cologne.png);
+    background-size: contain;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+    position: relative;
+    left: 31%;
+    top: 400px;
+}
+
+    .cologne .tooltiptext {
+        visibility: hidden;
+        background-color: dimgray;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        width: 100px;
+        top: 100%;
+        left: 50%;
+        margin-left: -50px; /* half of the width to center the tooltip */
+    }
+
+    .cologne:hover .tooltiptext {
+        visibility: visible;
+    }
+
+    .cologne:hover {
+        background-image: url(icon_cologne_filled.png);
+    }
+
