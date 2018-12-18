@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Infovis Project</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script>
+        $(document).ready(function(){
+     
+   // $('#myModal').modal('show')
+    $(".maassen").hover(function () {
+        $('#maassenmodal').modal({
+            show: true,
+            backdrop: true
+        }).mouseleave(function() {$('#maassenmodal').modal({
+            show: false,
+            backdrop: true
+        })})
+});
+});
+        
+    </script>
+</head>
+<body>
+<div>
+    <h1>Overview of Germany</h1>
+
+    <div>Landkarte der Zeitungen</div>
+    <div class='land'>
+        <!-- <button class='sued' type="button">Süddeutsche Zeitung</button>-->
+     <!--<button class='bild' type="button">Bild</button>-->
+        <!--<span class="berlin">
+        <span class="tooltiptext">Berlin</span>
+    </span>-->
+        <form name="hamburgform" method="post" action="/summary?event=Hamburg">
+            <span class="hamburg" onclick="hamburgform.submit()">
+                <span class="tooltiptext">Hamburg</span>
+            </span>
+        </form>
+        <form name="berlinform" method="post" action="/summary?event=Berlin">
+            <span class="berlin" onclick="berlinform.submit()">
+                <span class="tooltiptext">Berlin</span>
+            </span>
+        </form>
+        <form name="munichform" method="post" action="/summary?event=Munchen">
+            <span class="munich" onclick="munichform.submit()">
+                <span class="tooltiptext">Munich</span>
+            </span>
+        </form>
+        <form name="cologneform" method="post" action="/summary?event=Koln">
+            <span class="cologne" onclick="cologneform.submit()">
+                <span class="tooltiptext">Cologne</span>
+            </span>
+        </form>
+        <form name="maassenform" method="post" action="/maassen">
+            <span class="maassen" onclick="maassenform.submit()">
+                <span class="tooltiptext">Maaßen</span>
+            </span>
+        </form>
+    </div>
+</div>
+    <!-- Modal -->
+      <div class="modal fade" id="maassenmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id ="maassen" class="modal-body">
+                <div class= form-group>
+                <div class="panel panel-default">Name: <%= data.Name %></div>
+                <img src="Maaßen.jpg" width="80px" height="120px" alt="Hans-Georg-Maaßen">
+                <div class="form-group">Bio: <%= data.ShortBio %></div>
+                <div class="">Ereignisse: <%= data.Ereignisse %></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <form method="post" action="/maassen">
+                <button class="btn btn-primary" type="submit">View Details</button>
+            </form>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ------- -->
+</body>
+</html>

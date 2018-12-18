@@ -1,0 +1,19 @@
+  {
+    "Name": "Hans-Georg Maaßen",
+    "Bio": "Hans-Georg Maaßen wurde 1962 im Stadtteil Rheindahlen von Mönchengladbach geboren und machte 1982 Abitur am Gymnasium Rheindahlen. In Köln und Bonn studierte er Rechtswissenschaft als Stipendiat der Studienstiftung des deutschen Volkes. Ende der 1980er Jahre trat er in die CDU ein. 1997 schloss er die Promotion in Köln bei Hartmut Schiedermair mit seiner Arbeit Die Rechtsstellung des Asylbewerbers im Völkerrecht ab. Auf einer Japanreise lernte er seine spätere Frau kennen. Von 2001 bis 2016 war Maaßen Lehrbeauftragter am Fachbereich Rechtswissenschaft der Freien Universität Berlin. Er ist Autor von Publikationen zum Thema Ausländerrecht und Recht der inneren Sicherheit. Ab 2006 unterrichtete er im Europäischen Zentrum für Staatswissenschaften und Staatspraxis im Studiengang Europawissenschaften Seminare zum Thema europäisches Einwanderungs- und Asylrecht. Maaßen war Redakteur der Zeitschrift für Ausländerrecht und Ausländerpolitik (ZAR). Im Wintersemester 2006/2007 hielt er Gastvorträge an der Universität Tsukuba in Tokio.",
+    "ShortBio": "Hans-Georg Maaßen wurde 1962 im Stadtteil Rheindahlen von Mönchengladbach geboren. Er ist Autor von Publikationen zum Thema Ausländerrecht und Recht der inneren Sicherheit. ",
+    "Ereignisse": "In einem am 7. September 2018 veröffentlichen Interview mit der Bild-Zeitung äußerte Maaßen seine Zweifel daran, dass es während der Ausschreitungen in Chemnitz zu „Hetzjagden“ auf ausländisch aussehende Menschen gekommen sei. Dem Verfassungsschutz lägen „keine belastbaren Informationen darüber vor, dass solche Hetzjagden stattgefunden haben“. Auch lägen keine Belege für die Authentizität eines im Internet verbreiteten Videos vor, das eine solche mutmaßliche Jagd zeige.",
+    "Gehalt": {
+        "B1": {"Wert": 6560, "Besetzung": "Direktor, Professor"}, 
+        "B2": {"Wert": 7621, "Besetzung": "Oberst, Abteilungspräsident"},
+        "B3": {"Wert": 8069, "Besetzung": "Botschafter,Bundesbankdirektor"},
+        "B4": {"Wert": 8538, "Besetzung": "Präsident der Bundespolizeiakademie, Erster Direktor im Bundeskriminalamt"},
+        "B5": {"Wert": 9077, "Besetzung": "Direktor und Professor bei der Bundesagentur für Arbeit , Präsident der Zentralen Stelle für Informationstechnik im Sicherheitsbereich"},
+        "B6": {"Wert": 9589, "Besetzung": "Generalkonsul, Vizepräsident des Bundesamtes für Verfassungsschutz"},
+        "B7": {"Wert": 10083, "Besetzung": "Präsident des Bundesamtes für Sicherheit in der Informationstechnik, Präsident des Bildungszentrums der Bundeswehr"},
+        "B8": {"Wert": 10600, "Besetzung": "Präsident des Bundeskartellamtes, Präsident der Stiftung Preußischer Kulturbesitz"},
+        "B9": {"Wert": 11241, "Besetzung": "Direktor beim Bundesverfassungsgericht, Vizepräsident des Bundesrechnungshofes"},
+        "B10": {"Wert": 13232, "Besetzung": "Admiral, Präsident der Deutschen Rentenversicherung Bund"}
+        },
+    "Besoldungsordnung_B": "Beinhaltet die Besoldungsgruppe B1 bis B11 der Spitzenbeamten und Soldaten in Deutschland."     
+    }
