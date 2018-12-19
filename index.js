@@ -29,6 +29,10 @@ console.log("Bio:", jsonContent.Bio);
 console.log("Ereignisse:", jsonContent.Ereignisse);
 console.log("\n *EXIT* \n");
 
+//----Wiesn-JSON-Action------
+var contentsWiesn = fs.readFileSync("views/oktoberfest.json");
+var jsonContentWiesn = JSON.parse(contentsWiesn);
+
 
 
 var publicDir = path.join(__dirname + '/res');
@@ -40,12 +44,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Load them with the start page by passing data on get
 
 app.get('/', function (req, res) {
-  res.render('app', {data: jsonContent});
+    res.render('app', { data: jsonContent, dataWiesn: jsonContentWiesn });
 }); 
-app.get('/home', function (req, res) {
+/*app.get('/home', function (req, res) {
   res.sendFile(path.join(__dirname + '/select.html'));
   
-}); 
+});*/ 
 app.post('/summary', function (req, res) {
     var passedUrl = req.url.split("=");
     var eventName = passedUrl[passedUrl.length - 1];
@@ -109,7 +113,39 @@ app.post('/maassen', function(req, res){
 });
 
 
-app.post('/home', function (req, res) {
+app.post('/oktoberfest', function (req, res) {
+
+    // connect to the database: Throw error if not successful
+    connection.connect(function (err) {
+        if (err) {
+            console.error('error connecting: ' + err.stack);
+            return;
+        }
+    });
+
+    connection.query('SELECT *, ' /*MONTH(date),*/ + 'count(newsportal) AS count FROM newspapers.documents WHERE description LIKE "% Oktoberfest %"' /* and MONTH(date)=9*/ + ' GROUP BY newsportal ORDER BY count DESC;', function (err, result) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        console.log(result);
+
+        var sum = 0;
+        Object.keys(result).forEach(function (key) {
+            var row = result[key];
+            sum += row.count;
+        });
+
+        res.render('oktoberfest', { data: jsonContentWiesn, sum: sum, results: result });
+    });
+
+
+});
+
+
+
+/*app.post('/home', function (req, res) {
   console.log("You submitted: " + req.body.keyword + " and the date: " + req.body.date);
   // SELECT * FROM newspapers.documents where title = 'AfD';
   // On post select query and return to view
@@ -142,7 +178,7 @@ app.post('/home', function (req, res) {
         
       });
       connection.end();
-}); 
+}); */
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');

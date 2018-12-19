@@ -10,19 +10,17 @@ body {
     background-position: center top;
 }
 
-.sued {
+/*.sued {
     position: relative;
     left: 50%;
     top: 60%
-    /*background-color: #cccccc;*/
 }
 
 .bild {
     position: relative;
     left: 40%;
     top: 40%
-    /*background-color: #cccccc;*/
-}
+}*/
 .maassen {
     background-image: url(Maaßen.jpg);
     background-size: contain;
@@ -35,7 +33,7 @@ body {
     left: 60%;
     top: 330px;
 }
-.maassen .tooltiptext {
+/*.maassen .tooltiptext {
     visibility: hidden;
     background-color: dimgray;
     color: #fff;
@@ -47,14 +45,52 @@ body {
     width: 100px;
     top: 100%;
     left: 50%;
-    margin-left: -50px; /* half of the width to center the tooltip */
+    margin-left: -50px; 
 }
 .maassen:hover .tooltiptext {
     visibility: visible;
 }
 .maassen:hover {
     background-image: url(Maaßen.jpg);
+}*/
+
+
+.oktoberfest {
+    background-image: url(oktoberfest.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+    position: relative;
+    left: 55%;
+    top: 680px;
 }
+
+ /*  .oktoberfest .tooltiptext {
+        visibility: hidden;
+        background-color: dimgray;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        width: 100px;
+        top: 100%;
+        left: 50%;
+        margin-left: -50px; 
+    }
+
+    .oktoberfest:hover .tooltiptext {
+        visibility: visible;
+    }
+
+    .oktoberfest:hover {
+        background-image: url(icon_munich_filled.png);
+    }*/
+
+
 .berlin {
     background-image: url(icon_berlin.png);
     background-size: contain;

@@ -72,8 +72,10 @@
 	<p>... wurde insgesamt <%= sum %> Mal in der Beschreibung eines Artikels der nachfolgend aufgelisteten Zeitungen erw&auml;hnt, nachdem er sich anfang September zu dem Chemnitzer Attentat geäußert hatte.</p>
     <script>
     function test(d) {
-        //alert("Clicked: " + d.newsportal);
-        $('#myModal').modal('show'); 
+		var mymodal = $('#myModal');
+		mymodal.find('.modal-title').text(d.newsportal);
+		mymodal.find('.modal-body').text('TODO');
+		mymodal.modal('show');
     }
 
     </script>
@@ -132,27 +134,26 @@
    <div class="modal-dialog">
 
        <!-- Modal content-->
-       <div class="modal-content">
-           <div class="modal-header">
-               <button type="button" class="close" data-dismiss="modal">&times;</button>
-               <h4 class="modal-title">Modal Header</h4>
-           </div>
-           <div class="modal-body">
-               <p>Some text in the modal.</p>
-           </div>
-           <div class="modal-footer">
-               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           </div>
-       </div>
-
-   </div>
-</div>
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Modal Header</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>      
+			</div>
+			<div class="modal-body">
+				<p>Some text in the modal.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+	</div>
 
 <!-- TODO: Other graph --> 
 
 
 	
-	<h3>Bierkonsum auf dem Oktoberfest:</h3>
+	<h3>Gehalt pro Besoldungsgruppe:</h3>
 	
 	<script>
 

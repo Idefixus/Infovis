@@ -55,10 +55,12 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     
 	<script>
-		function test(d) {
-			//alert("Clicked: " + d.newsportal);
-			$('#myModal').modal('show'); 
-		}
+	    function test(d) {
+			var mymodal = $('#myModal');
+			mymodal.find('.modal-title').text(d.newsportal);
+			mymodal.find('.modal-body').text('TODO');
+			mymodal.modal('show');
+		}	
 
 	</script>
 </head>
@@ -121,7 +123,7 @@
 //----------------------------------------------------------------------	
 	</script>
 	
-	<h3>Bierkonsum auf dem Oktoberfest:</h3>
+<!--	<h3>Bierkonsum auf dem Oktoberfest:</h3>
 	
 	<script>
 
@@ -268,14 +270,13 @@ var dataAsCsv = `Year,Amount
 					.style("opacity", 0);	
 			});
 	
-    </script>
+    </script>-->
 
 
 	<!-- <p><% results.forEach(function(input) { %>
 		<li><%= input.newsportal %> - <%= input.count %></li>
 		<% }); %></p> -->
 
-		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
