@@ -33,6 +33,10 @@ console.log("\n *EXIT* \n");
 var contentsWiesn = fs.readFileSync("views/oktoberfest.json");
 var jsonContentWiesn = JSON.parse(contentsWiesn);
 
+//----Test
+var contentGermanCities = fs.readFileSync("res/datapublishers.json");
+var jsonGermanCities = JSON.parse(contentGermanCities);
+
 
 
 var publicDir = path.join(__dirname + '/res');
@@ -44,8 +48,94 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Load them with the start page by passing data on get
 
 app.get('/', function (req, res) {
-    res.render('app', { data: jsonContent, dataWiesn: jsonContentWiesn });
+    console.log(JSON.stringify(jsonGermanCities, null, 2));
+    var jsonLength = Object.keys(jsonGermanCities.features).length;
+    /*for (var i = 0; i < jsonLength; i++) {
+        console.log(jsonGermanCities.features[i].city);
+    }*/
+    // connect to the database: Throw error if not successful
+    connection.connect(function (err) {
+        if (err) {
+            console.error('error connecting: ' + err.stack);
+            return;
+        }
+    });
+
+    var cityarray = [];
+    for (var i = 0; i < jsonLength; i++) {
+        var city = jsonGermanCities.features[i].city;
+        connection.query(`select sum(sum) as sum, city from (
+        Select count(id) as sum, "` + city + `" as city 
+        from newspapers.documents
+        where(description LIKE "%` + city + `%" or title like "%` + city + `%") 
+        and date between str_to_date("01/01/2018", "%d/%m/%Y") and str_to_date("30/09/2018", "%d/%m/%Y")
+        UNION
+        Select count(id) as sum, "` + city + `" as city
+        from newspapers.documents 
+        where newsportal = "Bild" 
+        and (description LIKE "%` + city + `%" or title like "%` + city + `%") 
+        and str_to_date(date, '%d.%m.%Y') between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+        UNION
+        Select count(id) as sum, "` + city + `" as city
+        from newspapers.documents 
+        where newsportal = "Donaukurier" 
+        and (description LIKE "%` + city + `%" or title like "%` + city + `%") 
+        and str_to_date(date, '%a, %d %b %y') between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+        UNION
+        Select count(id) as sum, "` + city + `" as city
+        from newspapers.documents 
+        where newsportal = "Sueddeutsche Zeitung" 
+        and (description LIKE "%` + city + `%" or title like "%` + city + `%") 
+        and str_to_date(replace(replace(replace(replace(substring(date, 5, 25), 'Mär', 'Mar'), 'Dez', 'Dec'), 'Mai', 'May'), 'Okt', 'Oct'), '%d %b %Y') 
+        between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')) as t; `, function (err, result) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            
+            cityarray.push(result[0]);
+            console.log(result[0]);
+            //console.log(cityarray.toString());
+            if (cityarray.length == 13) {
+                res.render('index', { cityarray: cityarray });
+            }
+        });
+    }
+    
+    //res.render('app', { data: jsonContent, dataWiesn: jsonContentWiesn });
 }); 
+
+app.get('/drawlinechart', function (req, res) {
+    console.log("passed parameter: city =" + req.query.city);
+    var city = req.query.city;
+    connection.query(`Select count(id) as Amount, date_format(date, "%m") as Year
+        from newspapers.documents 
+        where (description LIKE '%` + city + `%' or title like '%` + city + `%') and date between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('31/09/2018', '%d/%m/%Y') 
+        group by Year 
+        order by Year; `, function (err, result) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+
+            var resultarray = [];
+            var month = 1;
+            for (var i = 0; i < result.length; i++) {
+                var row = result[i];
+                while (parseInt(row.Year) != month) {
+                    var insertmonth = '0' + month;
+                    resultarray.push({Amount: 0, Year: insertmonth });
+                    month++;
+                }
+                resultarray.push(row);
+                month++;
+            }
+            
+            console.log(resultarray);
+            res.json({ monthdata: resultarray });
+        });
+});
+
 /*app.get('/home', function (req, res) {
   res.sendFile(path.join(__dirname + '/select.html'));
   

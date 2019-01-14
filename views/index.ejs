@@ -1,0 +1,319 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<title>Germany bubble map</title>
+   
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		
+		<!--<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.7.4"></script>-->
+		
+		
+ 
+		<style type="text/css">
+			svg {
+				width: 700px;
+				height: 650px;
+				border: solid 1px #ccc;
+				background: #ADC4DC;
+			}
+
+			line {
+				stroke: brown;
+				stroke-dasharray: 4,2;
+			}
+
+			.countrypath {
+				fill: #ccc;
+				stroke: #fff;
+			}
+
+			div {
+				width: 900px;
+			}
+
+			.node {
+				fill: blue;
+				opacity: 0.5;
+			}
+			.node:hover {
+				fill: red;
+			}
+			
+			div.tooltip {	
+				position: absolute;			
+				text-align: center;			
+				width: 80px;					
+				height: 30px;					
+				padding: 2px;				
+				font: 12px sans-serif;		
+				background: #EACFB1;	
+				border: 0px;		
+				border-radius: 8px;			
+				pointer-events: none;			
+			}
+			
+			.graph {
+				padding-top: 30px;
+				padding-bottom: 30px;
+			}
+		
+			.line {
+				fill: none;
+				stroke: #547980;
+				stroke-width: 2px;
+			}
+			.dot {
+				fill: #547980;
+			}
+			.infotext {
+				fill: black;
+				opacity: 0.5;
+				font-size: 15px;
+				font-style: italic;
+			}
+
+		</style>
+	</head>
+	
+	<body>
+		<!--<h3>Title</h3>-->
+		<script>
+			function bubbleclick(d) {
+				 //$("p").text(d.city);
+				 $.ajax({
+					url: "/drawlinechart",
+					data: { city: d.city }
+				})
+				.done(function( data ) {
+					console.log( "Sample of data:", data );
+					//$("p").html(data.message);
+					drawChart(data.monthdata);
+				});
+			}
+		</script>
+		
+		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.7.4"></script>
+		<script>
+
+			width= 700;
+			height= 650;
+			
+			var citydata = <%- JSON.stringify(cityarray) %>;
+
+			//focusing map on SVG
+			xy=d3.geo.mercator().translate([-100,3000]).scale(16000)
+			path=d3.geo.path().projection(xy);
+
+			var svg2 = d3.select("body")
+				.append("svg")
+				.append("g")
+				.attr("id", "polygons");
+				
+			svg2.append("text")
+				.attr("text-anchor", "middle")
+				.attr("transform", "translate(" + (width/2) + " ,20)")
+				//.attr("class", "infotext")
+				.text("Amount of newspaper references for German cities in 2018");
+  
+			// Define the div for the tooltip
+			var div = d3.select("body").append("div")	
+				.attr("class", "tooltip")				
+				.style("opacity", 0);
+
+			d3.json('germany.geojson', function(collection) {
+				d3.select("#polygons")
+					.selectAll("path")
+					.data(collection.features)
+					.enter().append("path")
+					.attr("class","countrypath")
+					.attr("d", d3.geo.path().projection(xy));
+			});
+
+			d3.json('datapublishers.json', function(data) {
+
+				var force = d3.layout.force()
+				//  .gravity(0)
+					.charge(-0.7)
+					.nodes(data.features)
+					.size([0, 0]);
+					//.start();
+
+				var to_bubble=[]
+				//this function could be used to filter circles by city parameter
+				filter_by_city =function (city) {
+					data.features.forEach(function(data) { 
+						if (data.city==city) { 
+							to_bubble.push(data)
+						}
+					})
+					return to_bubble;
+				}
+
+				var node = d3.select("svg").selectAll("g")
+					.data(data.features)  //filter_by_city('Paris') could be used here, assigning later a more negative charge but its not the ideal solution at all
+					.enter().append("g")
+					.attr("id", function(d){ return d.city;})
+                       
+				node.append("circle")
+					.attr("transform", function(d) { 
+						return "translate(" + xy(d.coordinates) + ")"; })
+					.attr("id", function(d){ return d.id;})
+					.attr("class", "node")
+					.on("click", bubbleclick)
+					.on("mouseover", function(d, index) {		
+						div.transition()		
+							.duration(100)		
+							.style("opacity", .9);		
+						div.html(/*d.id + "<br/>"  + d.city + "<br/>" + */citydata[index].city + "<br/>" + citydata[index].sum)
+							.style("left", (d3.event.pageX) + "px")		
+							.style("top", (d3.event.pageY - 28) + "px");	
+					})					
+					.on("mouseout", function(d) {		
+						div.transition()		
+							.duration(200)		
+							.style("opacity", 0);	
+					})
+					.attr('r', function(d, index) { 
+						return citydata[index].sum/50});//d.num_collections*5});
+					//.call(force.drag);
+
+					force.on("tick", function() {
+						node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; }
+                        );
+                    }); 
+                    
+			});
+			
+		</script>
+		
+		<!--<h3>Überschrift...</h3>-->
+		
+		
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<script>
+		
+
+		// set the dimensions and margins of the graph
+		var margin = {top: 50, right: 50, bottom: 100, left: 80},
+			width = 700 - margin.left - margin.right,
+			height = 650 - margin.top - margin.bottom;
+    
+		// set the ranges
+		var x = d3.scaleTime().range([0, width]);
+		var y = d3.scaleLinear().domain([2000,0]).range([height, 0]);
+
+		// define the line
+		var valueline = d3.line()
+			.x(function(d) { return x(d.Year); })
+			.y(function(d) { return y(d.Amount); });
+			
+		// define the div for the tooltip
+		var div = d3.select("body").append("div")	
+			.attr("class", "tooltip")				
+			.style("opacity", 0);
+
+
+		// appends the svg obgect to the body of the page
+		// appends a 'group' element to 'svg'
+		// moves the 'group' element to the top left margin
+		var svg = d3.select("body").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform",
+				"translate(" + margin.left + "," + margin.top + ")");
+		
+		var parseTime = d3.timeParse("%m");
+		var formatTime = d3.timeFormat("%m");
+		
+		svg.append("text")
+			.attr("text-anchor", "middle")
+			.attr("transform", "translate(" + (width/2) + " ," + (height/2) + ")")
+			.attr("class", "infotext")
+			.text("click on a bubble to see further details");
+		
+		// draws a line chart
+		var drawChart = function(monthdata) {
+			svg.selectAll("*").remove();
+			
+			var data = monthdata;
+
+
+			// formats the data
+			data.forEach(function(d) {
+				d.Year = parseTime(d.Year);
+				d.Amount = +d.Amount;
+			});
+
+			// scales the range of the data
+			x.domain(d3.extent(data, function(d) { return d.Year}));
+			y.domain([0, d3.max(data, function(d) { return d.Amount; })]);
+
+
+			// adds the valueline path
+			svg.append("path")
+				.data([data])
+				.attr("class", "line")
+				.attr("d", valueline);
+
+			// adds the X Axis
+			svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x).tickFormat(d3.timeFormat("%B")));  
+
+			// text label for the x axis
+			svg.append("text")             
+				.attr("transform",
+					"translate(" + (width/2) + " ," + (height + margin.top) + ")")
+				.style("text-anchor", "middle")
+				.text("2018");
+
+			// adds the Y Axis
+			svg.append("g")
+				.call(d3.axisLeft(y));
+
+			// text label for the y axis
+			svg.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 0 - margin.left)
+				.attr("x",0 - (height / 2))
+				.attr("dy", "1em")
+				.style("text-anchor", "middle")
+				.text("Amount of articles");  
+		
+				// appends a circle for each datapoint 
+				svg.selectAll(".dot")
+				.data(data)
+			.enter()
+				.append("circle") 
+				.attr("class", "dot") 
+				.attr("cx", function(d) { return x(d.Year) })
+				.attr("cy", function(d) { return y(d.Amount) })
+				.attr("r", 5)
+				.on("mouseover", function (d) { 
+					d3.select(this).style("fill", "#45ADA8"); 
+					div.transition()		
+						.duration(200)		
+						.style("opacity", .9);		
+					div.html("Month: " + formatTime(d.Year) + "<br/>"  + d.Amount + " articles")	
+						.style("left", (d3.event.pageX) + "px")		
+						.style("top", (d3.event.pageY - 28) + "px");	
+				})
+				.on("mouseout", function(d) {
+					d3.select(this).style("fill", "#547980");
+					div.transition()		
+						.duration(500)		
+						.style("opacity", 0);	
+				});
+		}
+ 
+		
+		</script>
+		
+	<!--	<p><% cityarray.forEach(function(input) { %>
+            <li><%= input.sum %> - <%= input.city %></li>
+        <% }); %></p>-->
+		
+	</body>
+</html>
