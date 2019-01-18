@@ -5,7 +5,6 @@
     {
       "id": 13,
       "city": "Bamberg",
-      "num_collections": 1,
       "coordinates": [
         10.9,
         49.89
@@ -14,7 +13,6 @@
 	{
       "id": 1,
       "city": "Berlin",
-      "num_collections": 3,
       "coordinates": [
         13.4,
         52.52
@@ -23,7 +21,6 @@
 	{
       "id": 2,
       "city": "Hamburg",
-      "num_collections": 3,
       "coordinates": [
         9.99,
         53.55
@@ -32,7 +29,6 @@
     {
       "id": 3,
       "city": "München",
-      "num_collections": 4,
       "coordinates": [
         11.58,
         48.13
@@ -41,7 +37,6 @@
     {
       "id": 4,
       "city": "Köln",
-      "num_collections": 4,
       "coordinates": [
         6.96,
         50.94
@@ -50,7 +45,6 @@
     {
       "id": 5,
       "city": "Frankfurt",
-      "num_collections": 2,
       "coordinates": [
         8.68,
         50.11
@@ -59,7 +53,6 @@
     {
       "id": 6,
       "city": "Stuttgart",
-      "num_collections": 8,
       "coordinates": [
         9.18,
         48.77
@@ -68,7 +61,6 @@
     {
       "id": 7,
       "city": "Düsseldorf",
-      "num_collections": 3,
       "coordinates": [
         6.77,
         51.23
@@ -77,7 +69,6 @@
     {
       "id": 8,
       "city": "Dortmund",
-      "num_collections": 1,
       "coordinates": [
         7.46,
         51.51
@@ -86,7 +77,6 @@
     {
       "id": 9,
       "city": "Leipzig",
-      "num_collections": 1,
       "coordinates": [
         12.37,
         51.34
@@ -95,7 +85,6 @@
     {
       "id": 10,
       "city": "Bremen",
-      "num_collections": 1,
       "coordinates": [
         8.8,
         53.08
@@ -104,7 +93,6 @@
     {
       "id": 11,
       "city": "Dresden",
-      "num_collections": 1,
       "coordinates": [
         13.74,
         51.05
@@ -113,10 +101,17 @@
     {
       "id": 12,
       "city": "Hannover",
-      "num_collections": 4,
       "coordinates": [
         9.73,
         52.37
+      ]
+    },
+    {
+      "id": 14,
+      "city": "Chemnitz",
+      "coordinates": [
+        12.92,
+        50.82
       ]
     }
   ]

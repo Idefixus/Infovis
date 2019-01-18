@@ -3,19 +3,26 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>Germany bubble map</title>
    
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>	
 		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		
-		<!--<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.7.4"></script>-->
-		
-		
- 
 		<style type="text/css">
-			svg {
-				width: 700px;
+			body {
+				background: #1D282D;
+				padding: 15px;
+			}
+			.svgbig {
+				width: 710px;
 				height: 650px;
-				border: solid 1px #ccc;
-				background: #ADC4DC;
+				border: solid 1px #E84200;
+				border-radius: 4px;
+				background: #90A4AD;
+			}
+			.svgsmall {
+				width: 710px;
+				height: 325px;
+				border: solid 1px #E84200;
+				border-radius: 4px;
+				background: #90A4AD;
 			}
 
 			line {
@@ -33,11 +40,11 @@
 			}
 
 			.node {
-				fill: blue;
-				opacity: 0.5;
+				fill: #235177;
+				opacity: 0.75;
 			}
 			.node:hover {
-				fill: red;
+				fill: #B55038;
 			}
 			
 			div.tooltip {	
@@ -47,7 +54,7 @@
 				height: 30px;					
 				padding: 2px;				
 				font: 12px sans-serif;		
-				background: #EACFB1;	
+				background: #FFD4CA;	
 				border: 0px;		
 				border-radius: 8px;			
 				pointer-events: none;			
@@ -60,24 +67,42 @@
 		
 			.line {
 				fill: none;
-				stroke: #547980;
+				stroke: #364C5F;
 				stroke-width: 2px;
 			}
 			.dot {
-				fill: #547980;
+				fill: #364C5F;
 			}
 			.infotext {
-				fill: black;
+				fill: #031E34;
 				opacity: 0.5;
-				font-size: 15px;
+				font-size: 13px;
 				font-style: italic;
 			}
+			.fattext {
+				fill: #031E34;
+				font-size: 18px;
+				font-style: bold;
+			}
+			.descrtext {
+				fill: #031E34;
+				font: 16px sans-serif;
+			}
+			
+			svg rect {
+			fill: #364C5F;
+			}
+			
+			svg text {
+			fill: #031E34;
+			font: 13px sans-serif;
+			
+		}
 
 		</style>
 	</head>
 	
 	<body>
-		<!--<h3>Title</h3>-->
 		<script>
 			function bubbleclick(d) {
 				 //$("p").text(d.city);
@@ -86,9 +111,7 @@
 					data: { city: d.city }
 				})
 				.done(function( data ) {
-					console.log( "Sample of data:", data );
-					//$("p").html(data.message);
-					drawChart(data.monthdata);
+					drawChart(data.monthdata, d.city, data.top5);
 				});
 			}
 		</script>
@@ -96,31 +119,34 @@
 		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.7.4"></script>
 		<script>
 
-			width= 700;
+			width= 710;
 			height= 650;
 			
 			var citydata = <%- JSON.stringify(cityarray) %>;
 
-			//focusing map on SVG
+			// focusing map on SVG
 			xy=d3.geo.mercator().translate([-100,3000]).scale(16000)
 			path=d3.geo.path().projection(xy);
 
 			var svg2 = d3.select("body")
 				.append("svg")
+				.attr("class","svgbig")
 				.append("g")
 				.attr("id", "polygons");
-				
+			
+			// add description for map graph 
 			svg2.append("text")
 				.attr("text-anchor", "middle")
-				.attr("transform", "translate(" + (width/2) + " ,20)")
-				//.attr("class", "infotext")
-				.text("Amount of newspaper references for German cities in 2018");
+				.attr("transform", "translate(" + (width/2) + " ,40)")
+				.text("Amount of newspaper references for German cities in 2018")
+				.attr("class", "descrtext");
   
-			// Define the div for the tooltip
+			// define the div for the tooltip
 			var div = d3.select("body").append("div")	
 				.attr("class", "tooltip")				
 				.style("opacity", 0);
 
+			// draw the map
 			d3.json('germany.geojson', function(collection) {
 				d3.select("#polygons")
 					.selectAll("path")
@@ -130,6 +156,7 @@
 					.attr("d", d3.geo.path().projection(xy));
 			});
 
+			// add city data to map
 			d3.json('datapublishers.json', function(data) {
 
 				var force = d3.layout.force()
@@ -139,7 +166,7 @@
 					.size([0, 0]);
 					//.start();
 
-				var to_bubble=[]
+				/*var to_bubble=[]
 				//this function could be used to filter circles by city parameter
 				filter_by_city =function (city) {
 					data.features.forEach(function(data) { 
@@ -148,10 +175,10 @@
 						}
 					})
 					return to_bubble;
-				}
+				}*/
 
 				var node = d3.select("svg").selectAll("g")
-					.data(data.features)  //filter_by_city('Paris') could be used here, assigning later a more negative charge but its not the ideal solution at all
+					.data(data.features)  
 					.enter().append("g")
 					.attr("id", function(d){ return d.city;})
                        
@@ -165,7 +192,7 @@
 						div.transition()		
 							.duration(100)		
 							.style("opacity", .9);		
-						div.html(/*d.id + "<br/>"  + d.city + "<br/>" + */citydata[index].city + "<br/>" + citydata[index].sum)
+						div.html(citydata[index].city + "<br/>" + citydata[index].sum)
 							.style("left", (d3.event.pageX) + "px")		
 							.style("top", (d3.event.pageY - 28) + "px");	
 					})					
@@ -175,7 +202,7 @@
 							.style("opacity", 0);	
 					})
 					.attr('r', function(d, index) { 
-						return citydata[index].sum/50});//d.num_collections*5});
+						return citydata[index].sum/50});
 					//.call(force.drag);
 
 					force.on("tick", function() {
@@ -187,23 +214,21 @@
 			
 		</script>
 		
-		<!--<h3>Überschrift...</h3>-->
-		
 		
 		<script src="https://d3js.org/d3.v5.min.js"></script>
 		<script>
-		
 
 		// set the dimensions and margins of the graph
-		var margin = {top: 50, right: 50, bottom: 100, left: 80},
-			width = 700 - margin.left - margin.right,
-			height = 650 - margin.top - margin.bottom;
-    
+		var margin = {top: 80, right: 50, bottom: 30, left: 80},
+			width = 710 - margin.left - margin.right,
+			height = 650 - margin.top - margin.bottom*3,
+			middle = 250;
+			
 		// set the ranges
 		var x = d3.scaleTime().range([0, width]);
-		var y = d3.scaleLinear().domain([2000,0]).range([height, 0]);
+		var y = d3.scaleLinear().domain([2000,0]).range([height-middle, 0]);
 
-		// define the line
+		// define the line for the line chart
 		var valueline = d3.line()
 			.x(function(d) { return x(d.Year); })
 			.y(function(d) { return y(d.Amount); });
@@ -213,32 +238,60 @@
 			.attr("class", "tooltip")				
 			.style("opacity", 0);
 
-
+		// prepare the base for adding graphs later
+		var bodysvg = d3.select("body").append("svg").attr("class","svgbig");
+		
 		// appends the svg obgect to the body of the page
 		// appends a 'group' element to 'svg'
 		// moves the 'group' element to the top left margin
-		var svg = d3.select("body").append("svg")
+		var svg = bodysvg.append("svg") //d3.select("body").append("svg")
+			.attr("class","svgsmall")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
 			.attr("transform",
 				"translate(" + margin.left + "," + margin.top + ")");
+				
+		// appends svg element to the body for displaying the bar chart
+		var graph = bodysvg
+				.append("svg")
+				.attr("class", "svgsmall")
+				.attr("transform","translate(0 ," + (height - middle/2 + margin.top) + ")")
+				.attr("width", width+ margin.left + margin.right)
+				//.attr("height", barHeight * data2.length);  
+				.attr("height", margin.top*3);
 		
 		var parseTime = d3.timeParse("%m");
 		var formatTime = d3.timeFormat("%m");
 		
+		// set a default text if no graphs are displayed
 		svg.append("text")
 			.attr("text-anchor", "middle")
 			.attr("transform", "translate(" + (width/2) + " ," + (height/2) + ")")
 			.attr("class", "infotext")
 			.text("click on a bubble to see further details");
 		
-		// draws a line chart
-		var drawChart = function(monthdata) {
-			svg.selectAll("*").remove();
+		
+		// draws a line and bar chart
+		var drawChart = function(monthdata, cityname, top5) {
 			
+			// clear svg elements
+			svg.selectAll("*").remove();
+			graph.selectAll("*").remove();
+			
+			
+			//-----------------------------------------------------------------------
+			//--------|  Linechart:  |-----------------------------------------------
+			//-----------------------------------------------------------------------
+				
 			var data = monthdata;
-
+			
+			// text label for selected city
+			svg.append("text")             
+				.attr("transform", "translate(" + (width/2) + " , "+ (-margin.top/2) +")")
+				.style("text-anchor", "middle")
+				.attr("class","fattext")
+				.text(cityname);
 
 			// formats the data
 			data.forEach(function(d) {
@@ -250,70 +303,121 @@
 			x.domain(d3.extent(data, function(d) { return d.Year}));
 			y.domain([0, d3.max(data, function(d) { return d.Amount; })]);
 
-
 			// adds the valueline path
 			svg.append("path")
 				.data([data])
 				.attr("class", "line")
 				.attr("d", valueline);
 
-			// adds the X Axis
+			// adds the x axis
 			svg.append("g")
-				.attr("transform", "translate(0," + height + ")")
+				.attr("transform", "translate(0," + (height-middle)  + ")")
 				.call(d3.axisBottom(x).tickFormat(d3.timeFormat("%B")));  
 
 			// text label for the x axis
 			svg.append("text")             
 				.attr("transform",
-					"translate(" + (width/2) + " ," + (height + margin.top) + ")")
+					"translate(" + (width/2) + " ," + (height + margin.right -middle) + ")")
 				.style("text-anchor", "middle")
 				.text("2018");
 
-			// adds the Y Axis
+			// adds the y axis
 			svg.append("g")
 				.call(d3.axisLeft(y));
 
 			// text label for the y axis
 			svg.append("text")
 				.attr("transform", "rotate(-90)")
-				.attr("y", 0 - margin.left)
-				.attr("x",0 - (height / 2))
+				.attr("y", 0 - margin.left+10)
+				.attr("x",0 - ((height-middle) / 2))
 				.attr("dy", "1em")
 				.style("text-anchor", "middle")
-				.text("Amount of articles");  
+				.text("Percentage of articles about this city");  
 		
 				// appends a circle for each datapoint 
-				svg.selectAll(".dot")
+			svg.selectAll(".dot")
 				.data(data)
-			.enter()
+				.enter()
 				.append("circle") 
 				.attr("class", "dot") 
 				.attr("cx", function(d) { return x(d.Year) })
 				.attr("cy", function(d) { return y(d.Amount) })
 				.attr("r", 5)
 				.on("mouseover", function (d) { 
-					d3.select(this).style("fill", "#45ADA8"); 
+					d3.select(this).style("fill", "#B55038"); 
 					div.transition()		
 						.duration(200)		
 						.style("opacity", .9);		
-					div.html("Month: " + formatTime(d.Year) + "<br/>"  + d.Amount + " articles")	
+					div.html("Month: " + formatTime(d.Year) + "<br/>"  + d.Amount + "%")	
 						.style("left", (d3.event.pageX) + "px")		
 						.style("top", (d3.event.pageY - 28) + "px");	
 				})
 				.on("mouseout", function(d) {
-					d3.select(this).style("fill", "#547980");
+					d3.select(this).style("fill", "#364C5F");
 					div.transition()		
 						.duration(500)		
 						.style("opacity", 0);	
 				});
+				
+			//-----------------------------------------------------------------------
+			//--------|  Barchart:  |------------------------------------------------
+			//-----------------------------------------------------------------------
+				
+			var barHeight = 30;
+			var data2 = top5;
+
+			// adds a title to the bar chart
+			svg.append("text")
+				.attr("text-anchor", "middle")
+				.attr("transform", "translate("+ (margin.left/2) +" ," + (height-middle/2) + ")")
+				.attr("class","descrtext")
+				.text("Top 5 keywords:");
+                
+			// appends a group element for every data entry to the svg
+			// and assigns the data to it
+			var bar = graph.selectAll("g")
+				.data(data2)
+				.enter()
+				.append("g")
+				.attr("transform", function(d, i) {
+					return "translate(250," + (i*barHeight+margin.top/3) + ")";
+				});
+				
+			// draws a bar for every data entry
+			bar.append("rect")
+				.attr("width", function(d) {
+					return d.anzahl;
+				})
+				.attr("height", barHeight - 1)
+				.on("mouseover", function (d) { 
+					d3.select(this).style("fill", "#B55038"); })
+				.on("mouseout", function(d) {
+					d3.select(this).style("fill", "#364C5F"); });
+             
+			// adds the keyword string to every bar
+			bar.append("text")
+				.attr("x", function(d) {return -5;}) 
+				.attr("y", barHeight / 2)
+				.attr("dy", ".35em")
+				.style("text-anchor", "end")
+				.text(function(d) { return d.keyword; });		
+
+			// adds number of occurrences to every bar
+			bar.append("text")
+				.attr("x", function(d) {
+					var space = 10;
+					if (d.anzahl > 9) space = 15;
+					if (d.anzahl > 99) space = 22;
+					if (d.anzahl > 999) space = 30;
+					return (d.anzahl + space); })
+				.attr("y", barHeight / 2)
+				.attr("dy", ".35em")
+				.style("text-anchor", "end")
+				.text(function(d) { return d.anzahl; });	
+				
 		}
- 
 		
-		</script>
-		
-	<!--	<p><% cityarray.forEach(function(input) { %>
-            <li><%= input.sum %> - <%= input.city %></li>
-        <% }); %></p>-->
+		</script>	
 		
 	</body>
 </html>

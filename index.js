@@ -95,8 +95,7 @@ app.get('/', function (req, res) {
             
             cityarray.push(result[0]);
             console.log(result[0]);
-            //console.log(cityarray.toString());
-            if (cityarray.length == 13) {
+            if (cityarray.length == jsonLength) {
                 res.render('index', { cityarray: cityarray });
             }
         });
@@ -108,31 +107,105 @@ app.get('/', function (req, res) {
 app.get('/drawlinechart', function (req, res) {
     console.log("passed parameter: city =" + req.query.city);
     var city = req.query.city;
-    connection.query(`Select count(id) as Amount, date_format(date, "%m") as Year
-        from newspapers.documents 
-        where (description LIKE '%` + city + `%' or title like '%` + city + `%') and date between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('31/09/2018', '%d/%m/%Y') 
-        group by Year 
-        order by Year; `, function (err, result) {
-            if (err) {
-                console.error(err);
-                return;
-            }
+    var resultarray = [];
+    
+    connection.query(`Select round((b.amount/a.amount)*100, 2) as Amount, a.month as Year from
+(select sum(amount) as amount, month from (
+Select count(id) as amount, date_format(date, "%m") as month
+from newspapers.documents 
+where date between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('31/09/2018', '%d/%m/%Y') 
+group by month
+UNION
+Select count(id) as amount, date_format(str_to_date(date, '%d.%m.%Y'), "%m") as month
+from newspapers.documents 
+where newsportal = "Bild" 
+	and str_to_date(date, '%d.%m.%Y') between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+    group by month
+UNION
+Select count(id) as amount, date_format(str_to_date(date, '%a, %d %b %y'), "%m") as month
+from newspapers.documents 
+where newsportal = "Donaukurier" 
+    and str_to_date(date, '%a, %d %b %y') between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+    group by month
+UNION
+Select count(id) as amount, date_format(str_to_date(replace(replace(replace(replace(substring(date, 5, 25), 'Mär', 'Mar'), 'Dez', 'Dec'), 'Mai', 'May'), 'Okt', 'Oct'), '%d %b %Y') , "%m") as month
+from newspapers.documents 
+where newsportal = "Sueddeutsche Zeitung" 
+    and str_to_date(replace(replace(replace(replace(substring(date, 5, 25), 'Mär', 'Mar'), 'Dez', 'Dec'), 'Mai', 'May'), 'Okt', 'Oct'), '%d %b %Y') 
+	between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+    group by month
+) as t
+group by month 
+order by month) a,
+(select sum(amount) as amount, month from(
+ Select count(id) as amount, date_format(date, "%m") as month
+    from newspapers.documents 
+    where (description LIKE '%` + city + `%' or title like '%` + city + `%') and date between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('31/09/2018', '%d/%m/%Y') 
+   group by month
+ UNION
+Select count(id) as amount, date_format(str_to_date(date, '%d.%m.%Y'), "%m") as month
+from newspapers.documents 
+where newsportal = "Bild" 
+	and (description LIKE '%` + city + `%' or title like '%` + city + `%')  
+	and str_to_date(date, '%d.%m.%Y') between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+    group by month
+UNION
+Select count(id) as amount, date_format(str_to_date(date, '%a, %d %b %y'), "%m") as month
+from newspapers.documents 
+where newsportal = "Donaukurier" 
+	and (description LIKE '%` + city + `%' or title like '%` + city + `%')  
+    and str_to_date(date, '%a, %d %b %y') between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+	group by month
+UNION
+Select count(id) as amount, date_format(str_to_date(replace(replace(replace(replace(substring(date, 5, 25), 'Mär', 'Mar'), 'Dez', 'Dec'), 'Mai', 'May'), 'Okt', 'Oct'), '%d %b %Y') , "%m") as month
+from newspapers.documents 
+where newsportal = "Sueddeutsche Zeitung" 
+	and (description LIKE '%` + city + `%' or title like '%` + city + `%')  
+    and str_to_date(replace(replace(replace(replace(substring(date, 5, 25), 'Mär', 'Mar'), 'Dez', 'Dec'), 'Mai', 'May'), 'Okt', 'Oct'), '%d %b %Y') 
+	between str_to_date('01/01/2018', '%d/%m/%Y') and str_to_date('30/09/2018', '%d/%m/%Y')
+    group by month
+    ) as t
+    group by month
+    order by month) b where b.month = a.month`, function (err, result) {
 
-            var resultarray = [];
-            var month = 1;
-            for (var i = 0; i < result.length; i++) {
-                var row = result[i];
-                while (parseInt(row.Year) != month) {
-                    var insertmonth = '0' + month;
-                    resultarray.push({Amount: 0, Year: insertmonth });
-                    month++;
-                }
-                resultarray.push(row);
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        var month = 1;
+        for (var i = 0; i < result.length; i++) {
+            var row = result[i];
+            while (parseInt(row.Year) != month) {
+                var insertmonth = '0' + month;
+                resultarray.push({ Amount: 0, Year: insertmonth });
                 month++;
             }
-            
-            console.log(resultarray);
-            res.json({ monthdata: resultarray });
+            resultarray.push(row);
+            month++;
+        }
+
+        console.log(resultarray);
+            //res.json({ monthdata: resultarray });
+    });
+
+    //TOP 5 keywords
+    connection.query(`SELECT keyword, COUNT(b.id) AS anzahl
+    FROM documents AS b
+    JOIN documents_keywords AS a ON a.document_id = b.id
+    JOIN keywords AS c ON a.keyword_id = c.id
+    WHERE (description LIKE '%` + city + `%' or title like '%` + city + `%') and keyword not in ('` + city + `', 'Deutschland', 'Politik', 'Sport', 'Regional', 'Fussball', '', 'Süddeutsche Zeitung München')
+    GROUP BY keyword
+    ORDER BY anzahl DESC
+    limit 5;`, function (err, result) {
+        
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        console.log(result);
+        res.json({ monthdata: resultarray, top5: result });
         });
 });
 
