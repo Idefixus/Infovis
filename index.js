@@ -60,6 +60,19 @@ app.get('/', function (req, res) {
             return;
         }
     });
+    // Random events
+
+    //var events = ["maassen", "hamburger" ];
+    var events = {"events": [
+                            {"name": "maassen", "image": "Maaßen.jpg"},
+                            {"name": "oktoberfest", "image": "oktoberfest.png"},
+                            {"name": "hamburg", "image": "icon_hamburg.png"},
+                            {"name": "bundesregierung", "image": "bundestag.png"}
+                        ] };
+    var number = Math.floor((Math.random() * 4));
+    var currentevent = events.events[number];
+    console.log(currentevent);
+    console.log("Number:" + number);
 
     var cityarray = [];
     for (var i = 0; i < jsonLength; i++) {
@@ -96,7 +109,7 @@ app.get('/', function (req, res) {
             cityarray.push(result[0]);
             console.log(result[0]);
             if (cityarray.length == jsonLength) {
-                res.render('index', { cityarray: cityarray });
+                res.render('index', { cityarray: cityarray, currentevent: currentevent, data: jsonContent });
             }
         });
     }

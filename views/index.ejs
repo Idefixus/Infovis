@@ -45,6 +45,7 @@
 			}
 			.node:hover {
 				fill: #B55038;
+
 			}
 			
 			div.tooltip {	
@@ -114,8 +115,30 @@
 					drawChart(data.monthdata, d.city, data.top5);
 				});
 			}
+			
+
+			var event = <%- JSON.stringify(currentevent) %>;
+			console.log("Current event: " + event.name);
+
+			var action = event.name;
 		</script>
 		
+		<form method="post" id="post">
+		<button type="submit" id="event"></button>
+		</form>
+		<script> 
+			$("#event").click(function(){
+				$("#post").attr("action", action)
+			});
+		</script>
+		<script>
+			
+			var prepend = '<img style="width: 40px;length: 40px;border-radius: 50%;border: 1px solid #000000;left: 30px; top:60px" id=" ' + event.name + '" src=" ' + event.image + '" />';
+			console.log(prepend);
+			$( "#event" ).prepend(prepend);
+      
+		</script>
+
 		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.7.4"></script>
 		<script>
 
@@ -128,7 +151,7 @@
 			xy=d3.geo.mercator().translate([-100,3000]).scale(16000)
 			path=d3.geo.path().projection(xy);
 
-			var svg2 = d3.select("body")
+			var svg2 = d3.select("body").append("span")
 				.append("svg")
 				.attr("class","svgbig")
 				.append("g")
@@ -181,6 +204,7 @@
 					.data(data.features)  
 					.enter().append("g")
 					.attr("id", function(d){ return d.city;})
+					
                        
 				node.append("circle")
 					.attr("transform", function(d) { 
@@ -239,7 +263,7 @@
 			.style("opacity", 0);
 
 		// prepare the base for adding graphs later
-		var bodysvg = d3.select("body").append("svg").attr("class","svgbig");
+		var bodysvg = d3.select("body").append("span").append("svg").attr("class","svgbig").attr("id","preview");
 		
 		// appends the svg obgect to the body of the page
 		// appends a 'group' element to 'svg'
@@ -418,6 +442,38 @@
 		}
 		
 		</script>	
+		<span id="previewtext" style="display: none; width: 710px;height: 650px;border: solid 1px #E84200;border-radius: 4px;background: #90A4AD;"></span>
+		<script>
+
+		$("#event").hover(function() {
+			$('#preview').toggle();
+			$('#previewtext').css("display", "inline-block");
+
+				var expression = event.name;
+			switch(expression) {
+				case "maassen":
+				//$("#previewtext").append('<div>hello this is text inside an svg container</div>'); 
+				//$("#previewtext").append('<image xlink:href="Maaßen.jpg" x="0" y="0" height="50px" width="50px"></image>');
+				$("#previewtext").append('<div id ="maassen" class="modal-body"><div class= form-group><div class="panel panel-default">Name: <%= data.Name %></div><img src="Maaßen.jpg" width="80px" height="120px" alt="Hans-Georg-Maaßen"><div style="width: 710px;" class="form-group">Bio: <%= data.ShortBio %></div><div style="width: 710px;" class="">Ereignisse: <%= data.Ereignisse %></div></div></div>');
+					break;
+				case "oktoberfest":
+				$("#previewtext").append('This is Oktoberfest');
+					break;
+				default:
+				$("#previewtext").append('This is default');
+				} 
+
+			console.log("Toggle");
+			
+		  }, function() {
+				$('#preview').toggle();
+				$('#previewtext').toggle().empty();
+				
+		  }
+		);
+
+
+		</script>
 		
 	</body>
 </html>
