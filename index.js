@@ -70,7 +70,8 @@ app.get('/', function (req, res) {
                             {"name": "bundesregierung", "image": "bundestag.png"}
                         ] };
     var number = Math.floor((Math.random() * 4));
-    var currentevent = events.events[number];
+   // var currentevent = events.events[number];
+    var currentevent = events.events[0];
     console.log(currentevent);
     console.log("Number:" + number);
 

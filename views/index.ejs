@@ -4,109 +4,13 @@
 		<title>Germany bubble map</title>
    
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>	
+		<link rel="stylesheet" type="text/css" href="style2.css" />
 		
-		<style type="text/css">
-			body {
-				background: #1D282D;
-				padding: 15px;
-			}
-			.svgbig {
-				width: 710px;
-				height: 650px;
-				border: solid 1px #E84200;
-				border-radius: 4px;
-				background: #90A4AD;
-			}
-			.svgsmall {
-				width: 710px;
-				height: 325px;
-				border: solid 1px #E84200;
-				border-radius: 4px;
-				background: #90A4AD;
-			}
-
-			line {
-				stroke: brown;
-				stroke-dasharray: 4,2;
-			}
-
-			.countrypath {
-				fill: #ccc;
-				stroke: #fff;
-			}
-
-			div {
-				width: 900px;
-			}
-
-			.node {
-				fill: #235177;
-				opacity: 0.75;
-			}
-			.node:hover {
-				fill: #B55038;
-
-			}
-			
-			div.tooltip {	
-				position: absolute;			
-				text-align: center;			
-				width: 80px;					
-				height: 30px;					
-				padding: 2px;				
-				font: 12px sans-serif;		
-				background: #FFD4CA;	
-				border: 0px;		
-				border-radius: 8px;			
-				pointer-events: none;			
-			}
-			
-			.graph {
-				padding-top: 30px;
-				padding-bottom: 30px;
-			}
-		
-			.line {
-				fill: none;
-				stroke: #364C5F;
-				stroke-width: 2px;
-			}
-			.dot {
-				fill: #364C5F;
-			}
-			.infotext {
-				fill: #031E34;
-				opacity: 0.5;
-				font-size: 13px;
-				font-style: italic;
-			}
-			.fattext {
-				fill: #031E34;
-				font-size: 18px;
-				font-style: bold;
-			}
-			.descrtext {
-				fill: #031E34;
-				font: 16px sans-serif;
-			}
-			
-			svg rect {
-			fill: #364C5F;
-			}
-			
-			svg text {
-			fill: #031E34;
-			font: 13px sans-serif;
-			
-		}
-
-		</style>
 	</head>
 	
 	<body>
 		<script>
 			function bubbleclick(d) {
-				 //$("p").text(d.city);
 				 $.ajax({
 					url: "/drawlinechart",
 					data: { city: d.city }
@@ -189,23 +93,11 @@
 					.size([0, 0]);
 					//.start();
 
-				/*var to_bubble=[]
-				//this function could be used to filter circles by city parameter
-				filter_by_city =function (city) {
-					data.features.forEach(function(data) { 
-						if (data.city==city) { 
-							to_bubble.push(data)
-						}
-					})
-					return to_bubble;
-				}*/
-
 				var node = d3.select("svg").selectAll("g")
 					.data(data.features)  
 					.enter().append("g")
 					.attr("id", function(d){ return d.city;})
-					
-                       
+					  
 				node.append("circle")
 					.attr("transform", function(d) { 
 						return "translate(" + xy(d.coordinates) + ")"; })
@@ -268,7 +160,7 @@
 		// appends the svg obgect to the body of the page
 		// appends a 'group' element to 'svg'
 		// moves the 'group' element to the top left margin
-		var svg = bodysvg.append("svg") //d3.select("body").append("svg")
+		var svg = bodysvg.append("svg")
 			.attr("class","svgsmall")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
@@ -442,14 +334,15 @@
 		}
 		
 		</script>	
-		<span id="previewtext" style="display: none; width: 710px;height: 650px;border: solid 1px #E84200;border-radius: 4px;background: #90A4AD;"></span>
+		<span id="previewtext" style="display: none;"></span>
+		
 		<script>
 
 		$("#event").hover(function() {
 			$('#preview').toggle();
 			$('#previewtext').css("display", "inline-block");
 
-				var expression = event.name;
+			var expression = event.name;
 			switch(expression) {
 				case "maassen":
 				//$("#previewtext").append('<div>hello this is text inside an svg container</div>'); 
@@ -465,13 +358,10 @@
 
 			console.log("Toggle");
 			
-		  }, function() {
-				$('#preview').toggle();
-				$('#previewtext').toggle().empty();
-				
-		  }
-		);
-
+		}, function() {
+			$('#preview').toggle();
+			$('#previewtext').toggle().empty();
+		});
 
 		</script>
 		

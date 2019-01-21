@@ -1,161 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Maaßen</title>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Maaßen</title>
+	
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+	
+		<link rel="stylesheet" type="text/css" href="style2.css" />
+		<style type="text/css">
+			
+			#preview {
+				width: 710px;
+				height: 650px;
+				vertical-align:top;
+				margin-left: 4px;
+				border: solid 1px #E84200;
+				border-radius: 4px;
+				background: #90A4AD;
+			}
+			.back {
+				fill: lightgray;
+				border-radius: 10px;
+				stroke-width: 2px;
+				stroke: gray;
+				opacity:0.5;
+			}
 
-    <style>
-		body {
-			background-image: linear-gradient(to bottom right, #fdfbfb, #ebedee);
-		}
-		.graph {
-			padding-top: 30px;
-			padding-bottom: 30px;
-		}
+		</style>
+
+	</head>
+	<body>
+		<script>
+			function goback() {
+				window.history.back();
+			}
+		</script>
+    
+		<script>
+	
+		width= 710;
+		height= 650;
+		var svg2 = d3.select("body").append("span")
+			.append("svg")
+			.attr("class","svgbig");
+			
+		var mdata = <%- JSON.stringify(data) %>;
 		
-		.line {
-			fill: none;
-			stroke: #547980;
-			stroke-width: 2px;
-		}
-		.dot {
-			fill: #547980;
-		}
-
-		svg rect {
-			fill: #547980;
-		}
-            
-		svg text {
-			fill: rgb(40, 70, 116);
-			font: 12px sans-serif;
-			text-anchor: end;
-		}
+		// add back button 
+		svg2.append("image")
+			.attr('x', 15).attr('y', 15)
+			.attr('width', 40)
+			.attr('height', 40)
+			.attr("xlink:href", "back.png");	
+		svg2.append("rect")
+			.attr("class","back")
+			.attr("x", 10).attr("y", 10)
+			.attr("rx", 5).attr("ry", 5)
+			.attr('width', 50)
+			.attr('height', 50)
+			.on("mouseover", function (d) { 
+					d3.select(this).style("stroke", "darkgray")
+						.style("fill", "gray"); 
+			})
+			.on("mouseout", function (d) { 
+					d3.select(this).style("stroke", "gray")
+						.style("fill", "lightgray"); 
+			})
+			.on("click", goback);
 		
-		div.tooltip {   
-			position: absolute;           
-			text-align: center;           
-			width: 70px;                  
-			height: 35px;                 
-			padding: 3px;             
-			font: 12px sans-serif;        
-			background: Cadetblue;   
-			border: 0px;      
-			border-radius: 8px;           
-			pointer-events: none;         
+	
+	
+		svg2.append("svg:image")
+			.attr('x', (width/8))
+			.attr('y', 15)
+			.attr('width', 200)
+			.attr('height', 250)
+			.attr("xlink:href", "Maaßen.jpg");
+
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(" + (width/2) + " ,150)")
+			.attr("class", "descrtext")
+			.text(mdata.Name);
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(10 ,300)")
+			.text("Bio: " + mdata.Bio)
+			.call(wrap, (width-20));
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(10 ,450)")
+			.text("Ereignisse: " + mdata.Ereignisse)
+			.call(wrap, (width-20));
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(10 ,540)")
+			.text("Monatseinkommen von Maaßen der Stufe B9: " + mdata.Gehalt.B9.Wert + " €")
+			.call(wrap, (width-20));
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(10 ,570)")
+			.text("Besoldungsordnung B: " + mdata.Besoldungsordnung_B)
+			.call(wrap, (width-20));
+				
+		
+		// function for creating multiline texts
+		function wrap(text, width) {
+			text.each(function() {
+				var text = d3.select(this),
+					words = text.text().split(/\s+/).reverse(),
+					word,
+					line = [],
+					y = text.attr("y"),
+					dy = 1,
+					tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+				while (word = words.pop()) {
+					line.push(word);
+					tspan.text(line.join(" "));
+					if (tspan.node().getComputedTextLength() > width) {
+						line.pop();
+						tspan.text(line.join(" "));
+						line = [word];
+						tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em").text(word);
+					}
+				}
+			});
 		}
+				
+//-------------------------------------------------------------------
+
+		// set the dimensions and margins of the graph
+		var margin = {top: 80, right: 50, bottom: 30, left: 80},
+			width = 710 - margin.left - margin.right,
+			height = 650 - margin.top - margin.bottom,
+			middle = 250;
+			
+			
+		// define the div for the tooltip
+		var div = d3.select("body").append("div")	
+			.attr("class", "tooltip")				
+			.style("opacity", 0);
+		
+		// prepare the base for adding graphs 
+		var bodysvg = d3.select("body").append("span").append("svg").attr("class","svgbig").attr("id","preview");
 		
 		
+		// appends svg element to the body for displaying the bar chart
+		var graph = bodysvg.append("svg")
+				.attr("class", "svgbig")
+				.attr("transform","translate(10 , 10)")
+				.attr("width", width + margin.left + margin.right)  
+				.attr("height", height + margin.top + margin.bottom);
+				
+		// text labels
+		graph.append("text")             
+			.attr("transform", "translate(" + ((width+margin.right)/2) + " , 20)")
+			.style("text-anchor", "middle")
+			.attr("class","fattext")
+			.text(mdata.Name);
 		
-	</style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css" />
-
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-</head>
-<body>
-<div class= form-group>
-    <img src="Maaßen.jpg" width="300px" height="450px" alt="Hans-Georg-Maaßen">
-    <div class="">Name: <%= data.Name %></div>
-    <div class="">Bio: <%= data.Bio %></div>
-    <div class="">Ereignisse: <%= data.Ereignisse %></div>
-    <div class="">Monatseinkommen von Maaßen der Stufe B9: <%= data.Gehalt.B9.Wert %></div>
-    <div class="">Besoldungsordnung B: <%= data.Besoldungsordnung_B %></div>
-    </div>
-
-    <h2>Hans-Georg Maaßen</h2>
-	<p>... wurde insgesamt <%= sum %> Mal in der Beschreibung eines Artikels der nachfolgend aufgelisteten Zeitungen erw&auml;hnt, nachdem er sich anfang September zu dem Chemnitzer Attentat geäußert hatte.</p>
-    <script>
-    function test(d) {
-		var mymodal = $('#myModal');
-		mymodal.find('.modal-title').text(d.newsportal);
-		mymodal.find('.modal-body').text('TODO');
-		mymodal.modal('show');
-    }
-
-    </script>
-    <script>
-		var data2 = <%- JSON.stringify(results) %>;
-         
-        var width = 3000,
-			height = 500,
-			scaleFactor = 2, 
-			barHeight = 30;
+		var sum = <%- JSON.stringify(sum) %>;
+		graph.append("text")
+			.attr("transform", "translate(" + (margin.left/2) + ", " + (margin.top/2) + ")")
+			.style("text-anchor", "left")
+			.text("... wurde insgesamt " + sum + " Mal in der Beschreibung eines Artikels der nachfolgend aufgelisteten Zeitungen erwähnt, nachdem er sich anfang September zu dem Chemnitzer Attentat geäußert hatte.")
+			.call(wrap, (width+margin.left));
+			
+				
+		
+		var barHeight = 20;
+		var bardata = <%- JSON.stringify(results) %>;
+			
                 
-        var graph = d3.select("body")
-            .append("svg")
-			.attr("class", "graph")
-            .attr("width", width)
-            .attr("height", barHeight * data2.length);       
-                
-        var bar = graph.selectAll("g")
-            .data(data2)
+		// appends a group element for every data entry to the svg
+		// and assigns the data to it
+		var bar = graph.selectAll("g")
+			.data(bardata)
 			.enter()
 			.append("g")
 			.attr("transform", function(d, i) {
-				return "translate(200," + i * barHeight + ")";
+				return "translate(250," + (i*barHeight+margin.top) + ")";
 			});
+				
+				
+		// draws a bar for every data entry
 		bar.append("rect")
 			.attr("width", function(d) {
-				return d.count * scaleFactor;
+				return d.count;
 			})
 			.attr("height", barHeight - 1)
-			.on("click", test)
 			.on("mouseover", function (d) { 
-				d3.select(this).style("fill", "Cadetblue"); })
+				d3.select(this).style("fill", "#B55038"); })
 			.on("mouseout", function(d) {
-				d3.select(this).style("fill", "#547980"); });
-                
+				d3.select(this).style("fill", "#364C5F"); });
+             
+		// adds the keyword string to every bar
 		bar.append("text")
 			.attr("x", function(d) {return -5;}) 
 			.attr("y", barHeight / 2)
 			.attr("dy", ".35em")
-			.text(function(d) { return d.newsportal; });		
+			.style("text-anchor", "end")
+			.text(function(d) { return d.newsportal; });					
 
+		// adds number of occurrences to every bar
 		bar.append("text")
 			.attr("x", function(d) {
 				var space = 10;
 				if (d.count > 9) space = 15;
-				if (d.count > 99) space = 20;
+				if (d.count > 99) space = 22;
 				if (d.count > 999) space = 30;
-				return (d.count*scaleFactor + space); })
+				return (d.count + space); })
 			.attr("y", barHeight / 2)
 			.attr("dy", ".35em")
-			.text(function(d) { return d.count; });	
-</script>
+			.style("text-anchor", "end")
+			.text(function(d) { return d.count; });		
+				
+		
 
-   <!-- Modal -->
-   <div class="modal fade" id="myModal" role="dialog">
-   <div class="modal-dialog">
-
-       <!-- Modal content-->
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title">Modal Header</h4>
-				<button type="button" class="close" data-dismiss="modal">&times;</button>      
-			</div>
-			<div class="modal-body">
-				<p>Some text in the modal.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
-	</div>
-
-<!-- TODO: Other graph --> 
+//-------------------------------------------------------------------
 
 
-	
-	<h3>Gehalt pro Besoldungsgruppe:</h3>
-	
-	<script>
+		// appends the svg obgect to the body of the page
+		// appends a 'group' element to 'svg'
+		// moves the 'group' element to the top left margin
+		var svg = bodysvg.append("svg")
+			.attr("class","svgsmall")
+			.attr("width", width + margin.left+margin.right)
+			.attr("height", middle*2)
+			.attr("transform","translate(0 , "+middle+")")
+			.append("g")
+			.attr("width", width + margin.left+margin.right)
+			.attr("height", middle)
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		svg.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(-20 ,-10)")
+			.text("Gehalt pro Besoldungsgruppe:")
+			.attr("class","descrtext");
+			
 
 var dataAsCsv = `Besoldungsgruppe,Amount
 1,6560
@@ -170,69 +255,42 @@ var dataAsCsv = `Besoldungsgruppe,Amount
 10,13232
 `;
 
+		var dataline = d3.csvParse(dataAsCsv);
 
-		// set the dimensions and margins of the graph
-		var margin = {top: 50, right: 50, bottom: 100, left: 80},
-			width = 1000 - margin.left - margin.right,
-			height = 500 - margin.top - margin.bottom;
-    
 		// set the ranges
-        //var x = d3.scaleTime().range([0, width]);
-        var x = d3.scaleLinear().range([0, width]);
-		var y = d3.scaleLinear().range([height, 0]);
+		var x = d3.scaleLinear().range([0, (width-margin.left/2)]);
+		var y = d3.scaleLinear().range([middle, 0]);
 
-		// define the line
+		// define the line for the line chart
 		var valueline = d3.line()
 			.x(function(d) { return x(d.Besoldungsgruppe); })
 			.y(function(d) { return y(d.Amount); });
-			
-		// define the div for the tooltip
-		var div = d3.select("body").append("div")	
-			.attr("class", "tooltip")				
-			.style("opacity", 0);
-
-
-		// appends the svg obgect to the body of the page
-		// appends a 'group' element to 'svg'
-		// moves the 'group' element to the top left margin
-		var svg = d3.select("body").append("svg")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
-			.append("g")
-			.attr("transform",
-				"translate(" + margin.left + "," + margin.top + ")");
-
-		var data = d3.csvParse(dataAsCsv);
-
-		var parseTime = d3.timeParse("%Y");
-		var formatTime = d3.timeFormat("%Y");
-
+		
 		// formats the data
-		data.forEach(function(d) {
-			d.Besoldungsgruppe = d.Besoldungsgruppe;
+		dataline.forEach(function(d) {
+			d.Besoldungsgruppe = +d.Besoldungsgruppe;
 			d.Amount = +d.Amount;
 		});
-
+			
 		// scales the range of the data
-		x.domain(d3.extent(data, function(d) { return d.Besoldungsgruppe}));
-		y.domain([0, d3.max(data, function(d) { return d.Amount; })]);
-
-
+		x.domain(d3.extent(dataline, function(d) { return d.Besoldungsgruppe}));
+		y.domain([0, d3.max(dataline, function(d) { return d.Amount; })]);
+		
 		// adds the valueline path
 		svg.append("path")
-			.data([data])
+			.data([dataline])
 			.attr("class", "line")
 			.attr("d", valueline);
 
 		// adds the X Axis
 		svg.append("g")
-			.attr("transform", "translate(0," + height + ")")
+			.attr("transform", "translate(0," + (middle) + ")")
 			.call(d3.axisBottom(x));
 
 		// text label for the x axis
 		svg.append("text")             
 			.attr("transform",
-				"translate(" + (width/2) + " ," + (height + margin.top) + ")")
+				"translate(" + (width/2) + " ," + (middle +40) + ")")
 			.style("text-anchor", "middle")
 			.text("Besoldungsgruppe");
 
@@ -244,14 +302,15 @@ var dataAsCsv = `Besoldungsgruppe,Amount
 		svg.append("text")
 			.attr("transform", "rotate(-90)")
 			.attr("y", 0 - margin.left)
-			.attr("x",0 - (height / 2))
+			.attr("x",0 - margin.top*3/2)
 			.attr("dy", "1em")
 			.style("text-anchor", "middle")
-			.text("Amount (in Euros)");  
- 
+			.text("Gehalt (in Euro)");   
+			
+		
 		// appends a circle for each datapoint 
 		svg.selectAll(".dot")
-			.data(data)
+			.data(dataline)
 			.enter()
 			.append("circle") 
 			.attr("class", "dot") 
@@ -259,7 +318,7 @@ var dataAsCsv = `Besoldungsgruppe,Amount
 			.attr("cy", function(d) { return y(d.Amount) })
 			.attr("r", 5)
 			.on("mouseover", function (d) { 
-				d3.select(this).style("fill", "#45ADA8"); 
+				d3.select(this).style("fill", "#B55038"); 
 				div.transition()		
                     .duration(200)
                     .style("width", "140px")		
@@ -269,7 +328,7 @@ var dataAsCsv = `Besoldungsgruppe,Amount
 					.style("top", (d3.event.pageY - 60) + "px");	
             })
 			.on("mouseout", function(d) {
-				d3.select(this).style("fill", "#547980");
+				d3.select(this).style("fill", "#364C5F");
 				div.transition()		
 					.duration(500)		
 					.style("opacity", 0);	

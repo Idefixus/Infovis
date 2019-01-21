@@ -1,0 +1,107 @@
+body {
+	background: #1D282D;
+	padding: 15px;
+}
+
+.svgbig {
+	width: 710px;
+	height: 650px;
+	border: solid 1px #E84200;
+	border-radius: 4px;
+	background: #90A4AD;
+}
+
+.svgsmall {
+	width: 710px;
+	height: 325px;
+	border: solid 1px #E84200;
+	border-radius: 4px;
+	background: #90A4AD;
+}
+
+line {
+	stroke: brown;
+	stroke-dasharray: 4,2;
+}
+
+.countrypath {
+	fill: #ccc;
+	stroke: #fff;
+}
+
+div {
+	width: 900px;
+}
+
+.node {
+	fill: #235177;
+	opacity: 0.75;
+}
+.node:hover {
+	fill: #B55038;
+}
+			
+div.tooltip {	
+	position: absolute;	
+	text-align: center;	
+	width: 80px;
+	height: 30px;	
+	padding: 2px;	
+	font: 12px sans-serif;	
+	background: #FFD4CA;	
+	border: 0px;
+	border-radius: 8px;		
+	pointer-events: none;		
+}
+
+.graph {
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
+
+.line {
+	fill: none;
+	stroke: #364C5F;
+	stroke-width: 2px;
+}
+
+.dot {
+	fill: #364C5F;
+}
+
+.infotext {
+	fill: #031E34;
+	opacity: 0.5;
+	font-size: 13px;
+	font-style: italic;
+}
+
+.fattext {
+	fill: #031E34;
+	font-size: 18px;
+	font-style: bold;
+}
+
+.descrtext {
+	fill: #031E34;
+	font: 16px sans-serif;
+}
+
+svg rect {
+	fill: #364C5F;
+}
+
+svg text {
+	fill: #031E34;
+	font: 13px sans-serif;
+}
+
+#previewtext {
+	width: 690px;
+	height: 630px;
+	vertical-align:top;
+	border: solid 1px #E84200;
+	border-radius: 4px;
+	background: #90A4AD;
+	padding: 10px;
+}
