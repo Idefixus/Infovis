@@ -121,11 +121,17 @@ polyline{
 	fill: none;
 }
 
-.labelValue
-{
+.labelValue {
 	font-size: 60%;
 	opacity: .5;
-	
+}
+
+.back {
+	fill: lightgray;
+	border-radius: 10px;
+	stroke-width: 2px;
+	stroke: gray;
+	opacity:0.5;
 }
 
 

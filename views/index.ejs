@@ -26,6 +26,7 @@
 				width:600px;
 				padding: 20px;
 			}
+			
 
 		</style>
 		
@@ -34,36 +35,51 @@
 	<body>
 		<script>
 			function bubbleclick(d) {
-				 $.ajax({
+				$.ajax({
 					url: "/drawlinechart",
 					data: { city: d.city }
 				})
 				.done(function( data ) {
 					drawChart(data.monthdata, d.city, data.top5);
 				});
-			}
+			};
 			
-
 			var event = <%- JSON.stringify(currentevent) %>;
 			console.log("Current event: " + event.name);
 
 			var action = event.name;
-		</script>
-		
-		<form method="post" id="post">
-		<button type="submit" id="event"></button>
-		</form>
-		<script> 
-			$("#event").click(function(){
-				$("#post").attr("action", action)
-			});
-		</script>
-		<script>
 			
-			var prepend = '<img style="width: 40px;length: 40px;border-radius: 50%;border: 1px solid #000000;left: 30px; top:60px" id=" ' + event.name + '" src=" ' + event.image + '" />';
-			console.log(prepend);
-			$( "#event" ).prepend(prepend);
-      
+			function eventMouseOver() {
+				$('#preview').toggle();
+				$('#previewtext').css("display", "inline-block");
+				var expression = event.name;
+				switch(expression) {
+					case "maassen":
+						$("#previewtext").append('<div id ="maassen"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="Maaßen.jpg" width="117px" height="186px" ></div><div id="text"><%= data.ShortBio %></div><div id="text" >Ereignisse: <%= data.Ereignisse %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
+						break;
+					case "oktoberfest":
+						$("#previewtext").append('<div id ="oktoberfest"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="oktoberfest.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
+						break;
+					case "bundesregierung":
+						$("#previewtext").append('<div id ="bundesregierung"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="bundestag.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
+						break;
+					default:
+						$("#previewtext").append('This is default text');
+				} 
+			};
+			
+			function eventMouseOut() {
+				$('#preview').toggle();
+				$('#previewtext').toggle().empty();
+			}
+			
+			function eventClick() {
+				//$("#post").attr("action", action)
+				location.href = "/" + event.name;
+			};
+			
+
+			
 		</script>
 
 		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.7.4"></script>
@@ -83,6 +99,32 @@
 				.attr("class","svgbig")
 				.append("g")
 				.attr("id", "polygons");
+				
+			// add event button 
+			svg2.append("image")
+				.attr('x', 20).attr('y', 20)
+				.attr('width', 40)
+				.attr('height', 40)
+				.attr("xlink:href", event.image);	
+			svg2.append("rect")
+				.attr("class","back")
+				.style("stroke", "red")
+				.style("opacity", 0.4)
+				.attr("x", 15).attr("y", 15)
+				.attr("rx", 5).attr("ry", 5)
+				.attr('width', 50)
+				.attr('height', 50)
+				.on("mouseover", function (d) { 
+					eventMouseOver();
+					d3.select(this).style("stroke", "green")
+						.style("fill", "gray"); 
+				})
+				.on("mouseout", function (d) { 
+					eventMouseOut();
+					d3.select(this).style("stroke", "red")
+						.style("fill", "lightgray"); 
+				})
+				.on("click", eventClick);
 			
 			// add description for map graph 
 			svg2.append("text")
@@ -126,8 +168,9 @@
 						return "translate(" + xy(d.coordinates) + ")"; })
 					.attr("id", function(d){ return d.id;})
 					.attr("class", "node")
-					.on("click", bubbleclick)
-					.on("mouseover", function(d, index) {		
+					//.on("click", bubbleclick)
+					.on("mouseover", function(d, index) {
+						bubbleclick(d);
 						div.transition()		
 							.duration(100)		
 							.style("opacity", .9);		
@@ -208,7 +251,7 @@
 			.attr("text-anchor", "middle")
 			.attr("transform", "translate(" + (width/2) + " ," + (height/2) + ")")
 			.attr("class", "infotext")
-			.text("Klick auf eine Bubble, um weitere Details zu sehen");
+			.text("Berühre eine Bubble, um weitere Details zu sehen");
 		
 		
 		// draws a line and bar chart
@@ -360,36 +403,6 @@
 		
 		</script>	
 		<span id="previewtext" style="display: none;"></span>
-		
-		<script>
-
-		$("#event").hover(function() {
-			$('#preview').toggle();
-			$('#previewtext').css("display", "inline-block");
-
-			var expression = event.name;
-			switch(expression) {
-				case "maassen":
-				$("#previewtext").append('<div id ="maassen"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="Maaßen.jpg" width="117px" height="186px" ></div><div id="text"><%= data.ShortBio %></div><div id="text" >Ereignisse: <%= data.Ereignisse %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
-					break;
-				case "oktoberfest":
-				$("#previewtext").append('<div id ="oktoberfest"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="oktoberfest.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
-					break;
-				case "bundesregierung":
-				$("#previewtext").append('<div id ="bundesregierung"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="bundestag.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
-					break;
-				default:
-				$("#previewtext").append('This is default text');
-				} 
-
-			console.log("Toggle");
-			
-		}, function() {
-			$('#preview').toggle();
-			$('#previewtext').toggle().empty();
-		});
-
-		</script>
 		
 	</body>
 </html>

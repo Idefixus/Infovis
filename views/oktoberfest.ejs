@@ -22,13 +22,6 @@
 				border-radius: 4px;
 				background: #90A4AD;
 			}
-			.back {
-				fill: lightgray;
-				border-radius: 10px;
-				stroke-width: 2px;
-				stroke: gray;
-				opacity:0.5;
-			}
 
 		</style>
 
@@ -53,13 +46,13 @@
 		
 		// add back button 
 		svg2.append("image")
-			.attr('x', 15).attr('y', 15)
+			.attr('x', 20).attr('y', 20)
 			.attr('width', 40)
 			.attr('height', 40)
 			.attr("xlink:href", "back.png");	
 		svg2.append("rect")
 			.attr("class","back")
-			.attr("x", 10).attr("y", 10)
+			.attr("x", 15).attr("y", 15)
 			.attr("rx", 5).attr("ry", 5)
 			.attr('width', 50)
 			.attr('height', 50)
