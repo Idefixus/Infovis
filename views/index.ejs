@@ -88,7 +88,7 @@
 			svg2.append("text")
 				.attr("text-anchor", "middle")
 				.attr("transform", "translate(" + (width/2) + " ,40)")
-				.text("Amount of newspaper references for German cities in 2018")
+				.text("Menge an Zeitungsartikeln über deutsche Städte im Jahr 2018 (Jan-Sep)")
 				.attr("class", "descrtext");
   
 			// define the div for the tooltip
@@ -208,7 +208,7 @@
 			.attr("text-anchor", "middle")
 			.attr("transform", "translate(" + (width/2) + " ," + (height/2) + ")")
 			.attr("class", "infotext")
-			.text("click on a bubble to see further details");
+			.text("Klick auf eine Bubble, um weitere Details zu sehen");
 		
 		
 		// draws a line and bar chart
@@ -271,7 +271,7 @@
 				.attr("x",0 - ((height-middle) / 2))
 				.attr("dy", "1em")
 				.style("text-anchor", "middle")
-				.text("Percentage of articles about this city");  
+				.text("Prozentualer Anteil an Artikeln");  
 		
 				// appends a circle for each datapoint 
 			svg.selectAll(".dot")
@@ -287,7 +287,7 @@
 					div.transition()		
 						.duration(200)		
 						.style("opacity", .9);		
-					div.html("Month: " + formatTime(d.Year) + "<br/>"  + d.Amount + "%")	
+					div.html("Monat: " + formatTime(d.Year) + "<br/>"  + d.Amount + "%")	
 						.style("left", (d3.event.pageX) + "px")		
 						.style("top", (d3.event.pageY - 28) + "px");	
 				})
@@ -310,7 +310,7 @@
 				.attr("text-anchor", "middle")
 				.attr("transform", "translate("+ (margin.left/2) +" ," + (height-middle/2) + ")")
 				.attr("class","descrtext")
-				.text("Top 5 keywords:");
+				.text("Top 5 Keywords:");
                 
 			// appends a group element for every data entry to the svg
 			// and assigns the data to it

@@ -71,7 +71,6 @@ app.get('/', function (req, res) {
                         ] };
     var number = Math.floor((Math.random() * 2));
     var currentevent = events.events[number];
-    //var currentevent = events.events[0];
     var jsonData;
     switch (currentevent.name) {
         case "maassen":
