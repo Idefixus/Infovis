@@ -69,9 +69,18 @@ app.get('/', function (req, res) {
                             {"name": "hamburg", "image": "icon_hamburg.png"},
                             {"name": "bundesregierung", "image": "bundestag.png"}
                         ] };
-    var number = Math.floor((Math.random() * 4));
-   // var currentevent = events.events[number];
-    var currentevent = events.events[0];
+    var number = Math.floor((Math.random() * 2));
+    var currentevent = events.events[number];
+    //var currentevent = events.events[0];
+    var jsonData;
+    switch (currentevent.name) {
+        case "maassen":
+            jsonData = jsonContent;
+            break;
+        case "oktoberfest":
+            jsonData = jsonContentWiesn;
+            break;
+    }
     console.log(currentevent);
     console.log("Number:" + number);
 
@@ -110,7 +119,7 @@ app.get('/', function (req, res) {
             cityarray.push(result[0]);
             console.log(result[0]);
             if (cityarray.length == jsonLength) {
-                res.render('index', { cityarray: cityarray, currentevent: currentevent, data: jsonContent });
+                res.render('index', { cityarray: cityarray, currentevent: currentevent, data: jsonData });
             }
         });
     }

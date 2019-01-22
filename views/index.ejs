@@ -5,6 +5,29 @@
    
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>	
 		<link rel="stylesheet" type="text/css" href="style2.css" />
+		<style type="text/css">
+			
+			#text {
+				color: #031E34;
+				font: 15px sans-serif;
+			}
+			#title {
+				color: #031E34;
+				font: 20px sans-serif;
+				font-style: bold;
+			}
+			#descr {
+				color: #031E34;
+				opacity: 0.5;
+				font-size: 14px;
+				font-style: italic;
+			}
+			div {
+				width:600px;
+				padding: 20px;
+			}
+
+		</style>
 		
 	</head>
 	
@@ -333,6 +356,8 @@
 				
 		}
 		
+	
+		
 		</script>	
 		<span id="previewtext" style="display: none;"></span>
 		
@@ -345,12 +370,10 @@
 			var expression = event.name;
 			switch(expression) {
 				case "maassen":
-				//$("#previewtext").append('<div>hello this is text inside an svg container</div>'); 
-				//$("#previewtext").append('<image xlink:href="Maaßen.jpg" x="0" y="0" height="50px" width="50px"></image>');
-				$("#previewtext").append('<div id ="maassen" class="modal-body"><div class= form-group><div class="panel panel-default">Name: <%= data.Name %></div><img src="Maaßen.jpg" width="80px" height="120px" alt="Hans-Georg-Maaßen"><div style="width: 710px;" class="form-group">Bio: <%= data.ShortBio %></div><div style="width: 710px;" class="">Ereignisse: <%= data.Ereignisse %></div></div></div>');
+				$("#previewtext").append('<div id ="maassen"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="Maaßen.jpg" width="117px" height="186px" ></div><div id="text"><%= data.ShortBio %></div><div id="text" >Ereignisse: <%= data.Ereignisse %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
 					break;
 				case "oktoberfest":
-				$("#previewtext").append('This is Oktoberfest');
+				$("#previewtext").append('<div id ="oktoberfest"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="oktoberfest.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
 					break;
 				default:
 				$("#previewtext").append('This is default');
