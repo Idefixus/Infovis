@@ -33,6 +33,10 @@ console.log("\n *EXIT* \n");
 var contentsWiesn = fs.readFileSync("views/oktoberfest.json");
 var jsonContentWiesn = JSON.parse(contentsWiesn);
 
+//----Regierung-JSON-Action------
+var contentsRegierung = fs.readFileSync("views/bundesregierung.json");
+var jsonContentRegierung = JSON.parse(contentsRegierung);
+
 //----Test
 var contentGermanCities = fs.readFileSync("res/datapublishers.json");
 var jsonGermanCities = JSON.parse(contentGermanCities);
@@ -44,34 +48,31 @@ app.use(express.static(publicDir));
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.set('view engine', 'html');
 
-// Get random events from db:
-// Load them with the start page by passing data on get
 
+// Connect to the database.
+connection.connect(function (err) {
+    if (err) {
+        console.error('error connecting: ' + err.stack);
+        return;
+    }
+});
+var jsonData;
 app.get('/', function (req, res) {
     console.log(JSON.stringify(jsonGermanCities, null, 2));
     var jsonLength = Object.keys(jsonGermanCities.features).length;
-    /*for (var i = 0; i < jsonLength; i++) {
-        console.log(jsonGermanCities.features[i].city);
-    }*/
-    // connect to the database: Throw error if not successful
-    connection.connect(function (err) {
-        if (err) {
-            console.error('error connecting: ' + err.stack);
-            return;
-        }
-    });
-    // Random events
 
-    //var events = ["maassen", "hamburger" ];
+    // Get random events from db:
+    // Load them with the start page by passing data on get
+
     var events = {"events": [
                             {"name": "maassen", "image": "Maaßen.jpg"},
                             {"name": "oktoberfest", "image": "oktoberfest.png"},
-                            {"name": "hamburg", "image": "icon_hamburg.png"},
-                            {"name": "bundesregierung", "image": "bundestag.png"}
+                            {"name": "bundesregierung", "image": "bundestag.png"},
+                            {"name": "hamburg", "image": "icon_hamburg.png"}
                         ] };
-    var number = Math.floor((Math.random() * 2));
+    var number = Math.floor((Math.random() * 3));
     var currentevent = events.events[number];
-    var jsonData;
+    
     switch (currentevent.name) {
         case "maassen":
             jsonData = jsonContent;
@@ -79,9 +80,13 @@ app.get('/', function (req, res) {
         case "oktoberfest":
             jsonData = jsonContentWiesn;
             break;
+        case "bundesregierung":
+            jsonData = jsonContentRegierung;
+            break;
     }
     console.log(currentevent);
     console.log("Number:" + number);
+    console.log(jsonData);
 
     var cityarray = [];
     for (var i = 0; i < jsonLength; i++) {
@@ -122,8 +127,6 @@ app.get('/', function (req, res) {
             }
         });
     }
-    
-    //res.render('app', { data: jsonContent, dataWiesn: jsonContentWiesn });
 }); 
 
 app.get('/drawlinechart', function (req, res) {
@@ -208,7 +211,7 @@ where newsportal = "Sueddeutsche Zeitung"
         }
 
         console.log(resultarray);
-            //res.json({ monthdata: resultarray });
+
     });
 
     //TOP 5 keywords
@@ -231,22 +234,13 @@ where newsportal = "Sueddeutsche Zeitung"
         });
 });
 
-/*app.get('/home', function (req, res) {
-  res.sendFile(path.join(__dirname + '/select.html'));
-  
-});*/ 
+// TODO
 app.post('/summary', function (req, res) {
     var passedUrl = req.url.split("=");
     var eventName = passedUrl[passedUrl.length - 1];
     console.log("Req post = " + eventName);
 
-    // connect to the database: Throw error if not successful
-    connection.connect(function (err) {
-        if (err) {
-            console.error('error connecting: ' + err.stack);
-            return;
-        }
-    });
+
 
     connection.query('SELECT newsportal, count(newsportal) AS count FROM newspapers.documents WHERE title LIKE "%' + eventName + '%" GROUP BY newsportal ORDER BY count DESC;', function (err, result) {
         if (err) {
@@ -263,19 +257,10 @@ app.post('/summary', function (req, res) {
 
         res.render('summary', { event: eventName, sum: sum, results: result });
     });
-    //connection.end();
+
 });
 
 app.post('/maassen', function(req, res){
-
-    // DB 
-    // connect to the database: Throw error if not successful
-    connection.connect(function (err) {
-        if (err) {
-            console.error('error connecting: ' + err.stack);
-            return;
-        }
-    });
 
     connection.query('SELECT *, MONTH(date), count(newsportal) AS count FROM newspapers.documents WHERE description LIKE "% Maaßen %" and MONTH(date)=9 GROUP BY newsportal ORDER BY count DESC;', function (err, result) {
         if (err) {
@@ -291,7 +276,7 @@ app.post('/maassen', function(req, res){
             sum += row.count;
             }); 
             
-            res.render('maassen', { data: jsonContent, sum: sum, results: result });
+            res.render('maassen', { data: jsonData, sum: sum, results: result });
     }); 
         
 
@@ -299,14 +284,6 @@ app.post('/maassen', function(req, res){
 
 
 app.post('/oktoberfest', function (req, res) {
-
-    // connect to the database: Throw error if not successful
-    connection.connect(function (err) {
-        if (err) {
-            console.error('error connecting: ' + err.stack);
-            return;
-        }
-    });
 
     connection.query('SELECT *, ' /*MONTH(date),*/ + 'count(newsportal) AS count FROM newspapers.documents WHERE description LIKE "% Oktoberfest %"' /* and MONTH(date)=9*/ + ' GROUP BY newsportal ORDER BY count DESC;', function (err, result) {
         if (err) {
@@ -322,48 +299,51 @@ app.post('/oktoberfest', function (req, res) {
             sum += row.count;
         });
 
-        res.render('oktoberfest', { data: jsonContentWiesn, sum: sum, results: result });
+        res.render('oktoberfest', { data: jsonData, sum: sum, results: result });
     });
-
-
 });
 
+// The Bundestag event page
 
+app.post('/bundesregierung', function (req, res) {
 
-/*app.post('/home', function (req, res) {
-  console.log("You submitted: " + req.body.keyword + " and the date: " + req.body.date);
-  // SELECT * FROM newspapers.documents where title = 'AfD';
-  // On post select query and return to view
-      // Select request with prevention of sql injection
-    var keyword = req.body.keyword;
-
-    // connect to the database: Throw error if not successful
-    connection.connect(function (err) {
+    connection.query('SELECT *, ' /*MONTH(date),*/ + 'count(newsportal) AS count FROM newspapers.documents WHERE description LIKE "% Oktoberfest %"' /* and MONTH(date)=9*/ + ' GROUP BY newsportal ORDER BY count DESC;', function (err, result) {
         if (err) {
-            console.error('error connecting: ' + err.stack);
+            console.error(err);
             return;
         }
+
+        console.log(result);
+
+        var sum = 0;
+        Object.keys(result).forEach(function (key) {
+            var row = result[key];
+            sum += row.count;
+        });
+
+        res.render('bundesregierung', { data: jsonData, sum: sum, results: result });
     });
+});
 
-    connection.query('SELECT newsportal,count(newsportal) as count FROM newspapers.documents where title LIKE "%' + keyword + '%"  group by newsportal;' , function(err, result){
-          if (err){
-              console.error(err);
-              return;
-          }
-          //var array = [];
-          //for (var i = 0; i < result.length; i++) {
-          //  var row = result[i];
-          //  array.push(row);
+app.get('/bundesregierung', function (req, res) {
 
-          //}
-          console.log(result);
-          res.render('result', { testtest: result });
-        //console.log(array);
-        //res.render('result', {date: array});
-        
-      });
-      connection.end();
-}); */
+    connection.query('SELECT *, ' /*MONTH(date),*/ + 'count(newsportal) AS count FROM newspapers.documents WHERE description LIKE "% Oktoberfest %"' /* and MONTH(date)=9*/ + ' GROUP BY newsportal ORDER BY count DESC;', function (err, result) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        console.log(result);
+
+        var sum = 0;
+        Object.keys(result).forEach(function (key) {
+            var row = result[key];
+            sum += row.count;
+        });
+
+        res.render('bundesregierung', { data: jsonContentRegierung, sum: sum, results: result });
+    });
+});
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');

@@ -105,3 +105,28 @@ svg text {
 	background: #90A4AD;
 	padding: 10px;
 }
+
+
+
+
+
+path.slice{
+	stroke-width:2px;
+}
+
+polyline{
+	opacity: .3;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+}
+
+.labelValue
+{
+	font-size: 60%;
+	opacity: .5;
+	
+}
+
+
+

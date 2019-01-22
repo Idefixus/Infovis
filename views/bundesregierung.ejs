@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Bundesregierung</title>
+	
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+	
+		<link rel="stylesheet" type="text/css" href="style2.css" />
+		<style type="text/css">
+			
+			#preview {
+				width: 710px;
+				height: 650px;
+				vertical-align:top;
+				margin-left: 4px;
+				border: solid 1px #E84200;
+				border-radius: 4px;
+				background: #90A4AD;
+			}
+			.back {
+				fill: lightgray;
+				border-radius: 10px;
+				stroke-width: 2px;
+				stroke: gray;
+				opacity:0.5;
+            }
+            .toolTip {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            position: absolute;
+            display: none;
+            width: auto;
+            height: auto;
+            background: none repeat scroll 0 0 white;
+            border: 0 none;
+            border-radius: 8px 8px 8px 8px;
+            box-shadow: -3px 3px 15px #888888;
+            color: black;
+            font: 12px sans-serif;
+            padding: 5px;
+            text-align: center;
+        }
+
+		</style>
+
+	</head>
+	<body>
+		<script>
+			function goback() {
+				window.history.back();
+			}
+		</script>
+    
+		<script>
+	
+		width= 710;
+		height= 650;
+		var svg2 = d3.select("body").append("span")
+			.append("svg")
+			.attr("class","svgbig");
+			
+		var mdata = <%- JSON.stringify(data) %>;
+		
+		// add back button 
+		svg2.append("image")
+			.attr('x', 15).attr('y', 15)
+			.attr('width', 40)
+			.attr('height', 40)
+			.attr("xlink:href", "back.png");	
+		svg2.append("rect")
+			.attr("class","back")
+			.attr("x", 10).attr("y", 10)
+			.attr("rx", 5).attr("ry", 5)
+			.attr('width', 50)
+			.attr('height', 50)
+			.on("mouseover", function (d) { 
+					d3.select(this).style("stroke", "darkgray")
+						.style("fill", "gray"); 
+			})
+			.on("mouseout", function (d) { 
+					d3.select(this).style("stroke", "gray")
+						.style("fill", "lightgray"); 
+			})
+			.on("click", goback);
+		
+	
+	
+		svg2.append("svg:image")
+			.attr('x', (width/8))
+			.attr('y', 15)
+			.attr('width', 200)
+			.attr('height', 250)
+			.attr("xlink:href", "bundestag.png");
+
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(" + (width/2) + " ,150)")
+			.attr("class", "descrtext")
+			.text(mdata.Name);
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(10 ,300)")
+			.text("Bio: " + mdata.Bio)
+			.call(wrap, (width-20));
+		svg2.append("text")
+			.attr("text-anchor", "left")
+			.attr("transform", "translate(10 ,400)")
+			.text("Ereignisse: " + mdata.Ereignisse)
+            .call(wrap, (width-20));
+        svg2.append("text")
+            .attr("text-anchor", "left")
+            .attr("transform", "translate(10 ,500)")
+            .text("Sitzverteilung: " + mdata.Sitzverteilung)
+            .call(wrap, (width-20));
+				
+		
+		// function for creating multiline texts
+		function wrap(text, width) {
+			text.each(function() {
+				var text = d3.select(this),
+					words = text.text().split(/\s+/).reverse(),
+					word,
+					line = [],
+					y = text.attr("y"),
+					dy = 1,
+					tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+				while (word = words.pop()) {
+					line.push(word);
+					tspan.text(line.join(" "));
+					if (tspan.node().getComputedTextLength() > width) {
+						line.pop();
+						tspan.text(line.join(" "));
+						line = [word];
+						tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em").text(word);
+					}
+				}
+			});
+		}
+    
+    // prepare the base for adding graphs 
+
+    </script>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script>
+    
+    var pi = pi = Math.PI;
+    var width = 710,
+        height = 652,
+        radius = Math.min(width, height) / 2;
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("class","svgbig")
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    
+    svg.append("g")
+        .attr("class", "slices");
+    svg.append("g")
+        .attr("class", "labelName");
+    svg.append("g")
+        .attr("class", "labelValue");
+    svg.append("g")
+        .attr("class", "lines")
+    svg.append("text")
+        .attr("text-anchor", "left")
+        .attr("transform", "translate(-160 ,100)")
+        .text("Sitzeverteilung des deutschen Bundestags nach Partei")
+        .call(wrap, (width-60));
+    
+    
+    
+    var pie = d3.layout.pie()
+        .sort(null)
+      .startAngle(-90 * (pi/180))
+            .endAngle(90 * (pi/180))
+        .value(function(d) {
+            return d.value;
+        });
+    
+    var arc = d3.svg.arc()
+        .outerRadius(radius * 0.8)
+        .innerRadius(radius * 0.4);
+    
+    var outerArc = d3.svg.arc()
+        .innerRadius(radius * 0.9)
+        .outerRadius(radius * 0.9);
+    
+    var legendRectSize = (radius * 0.05);
+    var legendSpacing = radius * 0.02;
+    
+    
+    var div = d3.select("body").append("div").attr("class", "toolTip");
+    
+   
+    
+    var colorRange = d3.scale.category20();
+    var color = d3.scale.ordinal()
+        .range(colorRange.range());
+    
+    
+    datasetTotal = [
+            {label:"Linke", value:69},
+            {label:"SPD", value:153}, 
+            {label:"Grüne", value:67},
+            {label:"Union", value:246}, 
+            {label:"FDP", value:80},
+            {label:"AfD", value:94}
+            ];
+    
+    change(datasetTotal);
+    
+    
+    d3.selectAll("input")
+        .on("change", selectDataset);
+        
+    function selectDataset()
+    {
+        var value = this.value;
+        if (value == "total")
+        {
+            change(datasetTotal);
+        }
+        else if (value == "option1")
+        {
+            change(datasetOption1);
+        }
+        else if (value == "option2")
+        {
+            change(datasetOption2);
+        }
+    }
+    
+    function change(data) {
+    
+        /* ------- PIE SLICES -------*/
+        var slice = svg.select(".slices").selectAll("path.slice")
+            .data(pie(data), function(d){ return d.data.label });
+    
+        slice.enter()
+            .insert("path")
+            .style("fill", function(d) { return color(d.data.label); })
+            .attr("class", "slice");
+    
+        slice
+            .transition().duration(1000)
+            .attrTween("d", function(d) {
+                this._current = this._current || d;
+                var interpolate = d3.interpolate(this._current, d);
+                this._current = interpolate(0);
+                return function(t) {
+                    return arc(interpolate(t));
+                };
+            })
+        slice
+            .on("mousemove", function(d){
+                div.style("left", d3.event.pageX+10+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html((d.data.label)+"<br>"+(d.data.value)+" Sitze");
+            });
+        slice
+            .on("mouseout", function(d){
+                div.style("display", "none");
+            });
+    
+        slice.exit()
+            .remove();
+    
+        var legend = svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', function(d, i) {
+                var height = legendRectSize + legendSpacing;
+                var offset =  height * color.domain().length / 2;
+                var horz = -3 * legendRectSize;
+                var vert = i * height - offset;
+                return 'translate(' + horz + ',' + vert + ')';
+            });
+    
+        legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .style('fill', color)
+            .style('stroke', color);
+    
+        legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing)
+            .text(function(d) { return d; }); 
+
+    };
+    </script>
+</body>
+</html>

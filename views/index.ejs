@@ -375,8 +375,11 @@
 				case "oktoberfest":
 				$("#previewtext").append('<div id ="oktoberfest"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="oktoberfest.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
 					break;
+				case "bundesregierung":
+				$("#previewtext").append('<div id ="bundesregierung"> <div id="title" align="center"><%= data.Name %></div> <div align="center"><img src="bundestag.png" width="258px" height="223px" ></div><div id="text"><%= data.ShortBio %></div> <div id="descr" >Klick auf den Event-Button, um mehr zu erfahren.</div></div>');
+					break;
 				default:
-				$("#previewtext").append('This is default');
+				$("#previewtext").append('This is default text');
 				} 
 
 			console.log("Toggle");
